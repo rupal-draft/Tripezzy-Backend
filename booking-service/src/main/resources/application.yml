@@ -1,0 +1,71 @@
+resilience4j:
+  ratelimiter:
+    instances:
+      defaultRateLimiter:
+        limitForPeriod: 20
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      paginatedRateLimiter:
+        limitForPeriod: 15
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      userBookingsRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      destinationBookingsRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      statusBookingsRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      deleteRateLimiter:
+        limitForPeriod: 5
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      createBookingRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      getBookingByIdRateLimiter:
+        limitForPeriod: 15
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      travelDateRangeRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      paymentStatusPriceRangeRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      upcomingBookingsRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      countByStatusRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      softDeleteRateLimiter:
+        limitForPeriod: 5
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      bookingReferenceRateLimiter:
+        limitForPeriod: 15
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      paymentStatusRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      confirmBookingRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      advancedFilterRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
