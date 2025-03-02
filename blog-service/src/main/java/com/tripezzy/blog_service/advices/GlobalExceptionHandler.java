@@ -1,7 +1,9 @@
-package com.tripezzy.booking_service.advices;
+package com.tripezzy.blog_service.advices;
 
-import com.tripezzy.booking_service.exception.ResourceNotFound;
-import com.tripezzy.booking_service.exception.RuntimeConflict;
+
+import com.tripezzy.blog_service.exceptions.ResourceNotFound;
+import com.tripezzy.blog_service.exceptions.RuntimeConflict;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -10,12 +12,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     @ExceptionHandler(ResourceNotFound.class)
     public ResponseEntity<ApiResponse<?>> handleResourceNotFoundException(ResourceNotFound exception) {
@@ -91,6 +93,6 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<ApiResponse<?>> buildErrorResponseEntity(ApiError apiError) {
-        return new ResponseEntity<>(ApiResponse.error(apiError), apiError.getStatus());
+        return new ResponseEntity<>(ApiResponse.error(apiError), apiError.getHttpStatus());
     }
 }

@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
         @Index(name = "idx_status", columnList = "booking_status"),
         @Index(name = "idx_payment_status", columnList = "payment_status")
 })
-@EntityListeners(AuditingEntityListener.class) // Enable auditing
+@EntityListeners(AuditingEntityListener.class)
 public class Booking {
 
     @Id

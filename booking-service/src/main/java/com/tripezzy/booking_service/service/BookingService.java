@@ -45,4 +45,5 @@ public interface BookingService {
     Page<BookingDto> filterBookings(Long userId, Long destinationId, Status status, String paymentStatus, BigDecimal minPrice, BigDecimal maxPrice, LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     BookingDto confirmBooking(Long bookingId);
+
 }
