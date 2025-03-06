@@ -17,6 +17,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="blog-service" />
+        <module name="eCommerce-service" />
         <module name="booking-service" />
       </profile>
     </annotationProcessing>
@@ -25,6 +26,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="blog-service" options="-parameters" />
       <module name="booking-service" options="-parameters" />
+      <module name="eCommerce-service" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>
   </component>

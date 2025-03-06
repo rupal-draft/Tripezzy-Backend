@@ -1,5 +1,6 @@
 package com.tripezzy.booking_service.advices;
 
+import com.tripezzy.booking_service.exception.IllegalState;
 import com.tripezzy.booking_service.exception.ResourceNotFound;
 import com.tripezzy.booking_service.exception.RuntimeConflict;
 import org.slf4j.Logger;
@@ -37,8 +38,8 @@ public class GlobalExceptionHandler {
         return buildErrorResponseEntity(apiError);
     }
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ApiResponse<?>> handleIllegalStateException(IllegalStateException exception) {
+    @ExceptionHandler(IllegalState.class)
+    public ResponseEntity<ApiResponse<?>> handleIllegalStateException(IllegalState exception) {
         logger.error("Illegal state: {}", exception.getMessage());
         ApiError apiError = new ApiError.ApiErrorBuilder()
                 .setStatus(HttpStatus.BAD_REQUEST)

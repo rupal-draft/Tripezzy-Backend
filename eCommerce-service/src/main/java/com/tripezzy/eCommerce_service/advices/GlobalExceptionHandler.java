@@ -1,9 +1,8 @@
-package com.tripezzy.blog_service.advices;
+package com.tripezzy.eCommerce_service.advices;
 
-
-import com.tripezzy.blog_service.exceptions.IllegalState;
-import com.tripezzy.blog_service.exceptions.ResourceNotFound;
-import com.tripezzy.blog_service.exceptions.RuntimeConflict;
+import com.tripezzy.eCommerce_service.exceptions.IllegalState;
+import com.tripezzy.eCommerce_service.exceptions.ResourceNotFound;
+import com.tripezzy.eCommerce_service.exceptions.RuntimeConflict;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +18,18 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(ResourceNotFound.class)
     public ResponseEntity<ApiResponse<?>> handleResourceNotFoundException(ResourceNotFound exception) {
         logger.error("Resource not found: {}", exception.getMessage());
-        ApiError apiError = new ApiError.ApiErrorBuilder()
-                .setStatus(HttpStatus.NOT_FOUND)
+        ApiError apiError = new ApiError
+                .ApiErrorBuilder()
                 .setMessage(exception.getLocalizedMessage())
+                .setStatus(HttpStatus.NOT_FOUND)
                 .build();
+
         return buildErrorResponseEntity(apiError);
     }
 
@@ -94,6 +97,6 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<ApiResponse<?>> buildErrorResponseEntity(ApiError apiError) {
-        return new ResponseEntity<>(ApiResponse.error(apiError), apiError.getHttpStatus());
+        return new ResponseEntity<>(ApiResponse.error(apiError), apiError.getStatus());
     }
 }

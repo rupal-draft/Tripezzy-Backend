@@ -1,0 +1,7 @@
+resilience4j:
+  ratelimiter:
+    instances:
+      blogRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 10s
+        timeoutDuration: 1s

@@ -26,24 +26,28 @@ public class BlogController {
     }
 
     @PostMapping
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<BlogResponseDto> createBlog(@RequestBody BlogDto blogDto) {
         BlogResponseDto savedBlog = blogService.createBlog(blogDto);
         return new ResponseEntity<>(savedBlog, HttpStatus.CREATED);
     }
 
     @GetMapping("/{blogId}")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<BlogResponseDto> getBlogById(@PathVariable Long blogId) {
         BlogResponseDto blog = blogService.getBlogById(blogId);
         return ResponseEntity.ok(blog);
     }
 
     @GetMapping
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<Page<BlogResponseDto>> getAllBlogs(Pageable pageable) {
         Page<BlogResponseDto> blogs = blogService.getAllBlogs(pageable);
         return ResponseEntity.ok(blogs);
     }
 
     @GetMapping("/author/{authorId}")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<Page<BlogResponseDto>> getBlogsByAuthorId(
             @PathVariable Long authorId,
             Pageable pageable) {
@@ -52,6 +56,7 @@ public class BlogController {
     }
 
     @GetMapping("/status/{status}")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<Page<BlogResponseDto>> getBlogsByStatus(
             @PathVariable String status,
             Pageable pageable) {
@@ -60,6 +65,7 @@ public class BlogController {
     }
 
     @PutMapping("/{blogId}")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<BlogResponseDto> updateBlog(
             @PathVariable Long blogId,
             @RequestBody BlogDto blogDto) {
@@ -68,6 +74,7 @@ public class BlogController {
     }
 
     @PutMapping("/{blogId}/status/{status}")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<BlogResponseDto> updateBlogStatus(
             @PathVariable Long blogId,
             @PathVariable BlogStatus status) {
@@ -76,12 +83,14 @@ public class BlogController {
     }
 
     @DeleteMapping("/{blogId}")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<Void> deleteBlog(@PathVariable Long blogId) {
         blogService.deleteBlog(blogId);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{blogId}/likes")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<LikeDto> addLikeToBlog(
             @PathVariable Long blogId,
             @RequestBody LikeDto likeDto) {
@@ -90,6 +99,7 @@ public class BlogController {
     }
 
     @DeleteMapping("/{blogId}/likes/{likeId}")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<Void> removeLikeFromBlog(
             @PathVariable Long blogId,
             @PathVariable Long likeId) {
@@ -98,6 +108,7 @@ public class BlogController {
     }
 
     @PostMapping("/{blogId}/comments")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<CommentDto> addCommentToBlog(
             @PathVariable Long blogId,
             @RequestBody CommentDto commentDto) {
@@ -106,6 +117,7 @@ public class BlogController {
     }
 
     @PutMapping("/{blogId}/comments/{commentId}")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<CommentDto> updateComment(
             @PathVariable Long blogId,
             @PathVariable Long commentId,
@@ -115,6 +127,7 @@ public class BlogController {
     }
 
     @DeleteMapping("/{blogId}/comments/{commentId}")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long blogId,
             @PathVariable Long commentId) {
@@ -123,18 +136,21 @@ public class BlogController {
     }
 
     @GetMapping("/{blogId}/likes")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<List<LikeDto>> getLikesForBlog(@PathVariable Long blogId) {
         List<LikeDto> likes = blogService.getLikesForBlog(blogId);
         return ResponseEntity.ok(likes);
     }
 
     @GetMapping("/{blogId}/comments")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<List<CommentDto>> getCommentsForBlog(@PathVariable Long blogId) {
         List<CommentDto> comments = blogService.getCommentsForBlog(blogId);
         return ResponseEntity.ok(comments);
     }
 
     @GetMapping("/search")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<Page<BlogResponseDto>> searchBlogs(
             @RequestParam String query,
             Pageable pageable) {
@@ -143,6 +159,7 @@ public class BlogController {
     }
 
     @GetMapping("/filter")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<Page<BlogResponseDto>> filterBlogs(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String tags,
@@ -150,20 +167,15 @@ public class BlogController {
         Page<BlogResponseDto> blogs = blogService.filterBlogs(category, tags, pageable);
         return ResponseEntity.ok(blogs);
     }
-
-    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
-    public ResponseEntity<String> rateLimitFallback(Long blogId, RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                .body("Too many requests. Please try again later.");
-    }
-
     @DeleteMapping("/soft-delete/{blogId}")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<Void> softDeleteBlog(@PathVariable Long blogId) {
         blogService.softDeleteBlog(blogId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/filter/advanced")
+    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<Page<BlogResponseDto>> advanceFilterBlogs(
             @RequestParam(required = false) Long authorId,
             @RequestParam(required = false) BlogStatus status,
@@ -172,5 +184,10 @@ public class BlogController {
             Pageable pageable) {
         Page<BlogResponseDto> blogs = blogService.advanceFilterBlogs(authorId, status, category, tags, pageable);
         return ResponseEntity.ok(blogs);
+    }
+
+    public ResponseEntity<String> rateLimitFallback(Long blogId, RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body("Too many requests. Please try again later.");
     }
 }
