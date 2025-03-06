@@ -2,6 +2,7 @@ package com.tripezzy.booking_service.controllers;
 
 import com.tripezzy.booking_service.dto.BookingDto;
 import com.tripezzy.booking_service.entity.enums.Status;
+import com.tripezzy.booking_service.exception.RuntimeConflict;
 import com.tripezzy.booking_service.service.BookingService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.data.domain.Page;
@@ -171,7 +172,7 @@ public class BookingController {
         return ResponseEntity.ok(filteredBookings);
     }
 
-    public ResponseEntity<String> rateLimitFallback(Long bookingId, RuntimeException e) {
+    public ResponseEntity<String> rateLimitFallback(Long bookingId, RuntimeConflict e) {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                 .body("Too many requests. Please try again later.");
     }

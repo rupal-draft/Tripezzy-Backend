@@ -5,6 +5,7 @@ import com.tripezzy.blog_service.dto.BlogResponseDto;
 import com.tripezzy.blog_service.dto.CommentDto;
 import com.tripezzy.blog_service.dto.LikeDto;
 import com.tripezzy.blog_service.entity.enums.BlogStatus;
+import com.tripezzy.blog_service.exceptions.RuntimeConflict;
 import com.tripezzy.blog_service.service.BlogService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.data.domain.Page;
@@ -186,7 +187,7 @@ public class BlogController {
         return ResponseEntity.ok(blogs);
     }
 
-    public ResponseEntity<String> rateLimitFallback(Long blogId, RuntimeException e) {
+    public ResponseEntity<String> rateLimitFallback(Long blogId, RuntimeConflict e) {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                 .body("Too many requests. Please try again later.");
     }
