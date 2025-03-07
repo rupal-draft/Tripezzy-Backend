@@ -1,6 +1,6 @@
 # Blog Service Microservice
 
-This repository contains the code for a Blog Service microservice, built using Spring Boot. This service provides functionalities for creating, managing, and retrieving blog posts, along with features for likes and comments.
+This directory contains the code for a Blog Service microservice, built using Spring Boot. This service provides functionalities for creating, managing, and retrieving blog posts, along with features for likes and comments.
 
 ## Features
 
