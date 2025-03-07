@@ -8,14 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class DiscountStrategyManager {
 
-    private final QuantityBasedDiscountStrategy quantityBasedDiscountStrategy;
-    private final PriceBasedDiscountStrategy priceBasedDiscountStrategy;
-
-    public DiscountStrategyManager(QuantityBasedDiscountStrategy quantityBasedDiscountStrategy, PriceBasedDiscountStrategy priceBasedDiscountStrategy) {
-        this.quantityBasedDiscountStrategy = quantityBasedDiscountStrategy;
-        this.priceBasedDiscountStrategy = priceBasedDiscountStrategy;
-    }
-
     public DiscountStrategy getDiscountStrategy(String discountType, Double discountPercentage, Integer minQuantity) {
         if ("price".equalsIgnoreCase(discountType)) {
             return new PriceBasedDiscountStrategy(discountPercentage);

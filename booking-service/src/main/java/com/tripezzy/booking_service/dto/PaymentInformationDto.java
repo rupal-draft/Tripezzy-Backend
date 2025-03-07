@@ -1,6 +1,7 @@
 package com.tripezzy.booking_service.dto;
 
 import jakarta.validation.constraints.*;
+
 import java.time.LocalDate;
 
 public class PaymentInformationDto {
