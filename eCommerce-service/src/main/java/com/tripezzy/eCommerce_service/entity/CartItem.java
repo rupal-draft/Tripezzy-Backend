@@ -40,15 +40,6 @@ public class CartItem {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public CartItem(Long id, Cart cart, Product product, Integer quantity, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.cart = cart;
-        this.product = product;
-        this.quantity = quantity;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
     public Long getId() {
         return id;
     }

@@ -2,6 +2,7 @@ package com.tripezzy.eCommerce_service.controllers;
 
 import com.tripezzy.eCommerce_service.dto.CartDto;
 import com.tripezzy.eCommerce_service.dto.CartItemDto;
+import com.tripezzy.eCommerce_service.exceptions.RuntimeConflict;
 import com.tripezzy.eCommerce_service.services.CartService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.http.HttpStatus;
@@ -52,5 +53,10 @@ public class CartController {
             @RequestParam(required = false) Integer minQuantity) {
         double totalCost = cartService.calculateTotalCost(userId, discountType, discountPercentage, minQuantity);
         return ResponseEntity.ok(totalCost);
+    }
+
+    public ResponseEntity<String> rateLimitFallback(Long blogId, RuntimeConflict e) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body("Too many requests. Please try again later.");
     }
 }

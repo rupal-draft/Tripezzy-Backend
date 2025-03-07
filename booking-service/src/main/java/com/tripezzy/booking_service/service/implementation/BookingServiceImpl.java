@@ -60,6 +60,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Cacheable(value = "bookings", key = "bookings")
     public List<BookingDto> getAllBookings() {
         log.info("Fetching all bookings");
         List<Booking> bookings = bookingRepository.findAll();
@@ -69,6 +70,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Cacheable(value = "bookings", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<BookingDto> getAllBookings(Pageable pageable) {
         log.info("Fetching all bookings with pagination");
         return bookingRepository.findAll(pageable)

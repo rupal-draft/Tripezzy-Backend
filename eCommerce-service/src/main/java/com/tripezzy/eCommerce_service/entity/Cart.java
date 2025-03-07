@@ -11,7 +11,9 @@ import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "cart")
+@Table(name = "cart", indexes = {
+        @Index(name = "idx_cart_user_id", columnList = "user_id")
+})
 public class Cart {
 
     @Id
@@ -32,14 +34,6 @@ public class Cart {
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    public Cart(Long id, Long userId, List<CartItem> items, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.userId = userId;
-        this.items = items;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 
     public Long getId() {
         return id;
