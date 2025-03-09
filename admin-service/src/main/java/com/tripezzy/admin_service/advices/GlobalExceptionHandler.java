@@ -1,9 +1,9 @@
 package com.tripezzy.admin_service.advices;
 
 
-import com.tripezzy.blog_service.exceptions.IllegalState;
-import com.tripezzy.blog_service.exceptions.ResourceNotFound;
-import com.tripezzy.blog_service.exceptions.RuntimeConflict;
+import com.tripezzy.admin_service.exceptions.IllegalState;
+import com.tripezzy.admin_service.exceptions.ResourceNotFound;
+import com.tripezzy.admin_service.exceptions.RuntimeConflict;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
