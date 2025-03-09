@@ -16,14 +16,16 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="blog-service" />
         <module name="eCommerce-service" />
+        <module name="blog-service" />
+        <module name="admin-service" />
         <module name="booking-service" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="admin-service" options="-parameters" />
       <module name="blog-service" options="-parameters" />
       <module name="booking-service" options="-parameters" />
       <module name="eCommerce-service" options="-parameters" />
