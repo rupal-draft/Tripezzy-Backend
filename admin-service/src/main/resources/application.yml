@@ -1,0 +1,27 @@
+resilience4j:
+  ratelimiter:
+    instances:
+      createDestinationRateLimiter:
+        limitForPeriod: 5
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      getAllDestinationsRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      getDestinationByIdRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      deleteDestinationRateLimiter:
+        limitForPeriod: 3
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      searchDestinationsRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+      filterDestinationsRateLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0

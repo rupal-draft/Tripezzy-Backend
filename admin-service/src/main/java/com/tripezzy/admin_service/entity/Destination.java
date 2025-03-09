@@ -30,6 +30,17 @@ public class Destination extends Auditable{
     @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TourPackage> tourPackages;
 
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     public Long getId() {
         return id;
     }

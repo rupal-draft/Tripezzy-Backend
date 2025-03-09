@@ -1,6 +1,7 @@
 package com.tripezzy.admin_service.advices;
 
 
+import com.tripezzy.admin_service.exceptions.DataIntegrityViolation;
 import com.tripezzy.admin_service.exceptions.IllegalState;
 import com.tripezzy.admin_service.exceptions.ResourceNotFound;
 import com.tripezzy.admin_service.exceptions.RuntimeConflict;
@@ -35,6 +36,16 @@ public class GlobalExceptionHandler {
         logger.error("Runtime conflict: {}", exception.getMessage());
         ApiError apiError = new ApiError.ApiErrorBuilder()
                 .setStatus(HttpStatus.CONFLICT)
+                .setMessage(exception.getLocalizedMessage())
+                .build();
+        return buildErrorResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(DataIntegrityViolation.class)
+    public ResponseEntity<ApiResponse<?>> handleDataIntegrityViolationException(DataIntegrityViolation exception) {
+        logger.error("Data Integrity Violation: {}", exception.getMessage());
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .setStatus(HttpStatus.BAD_REQUEST)
                 .setMessage(exception.getLocalizedMessage())
                 .build();
         return buildErrorResponseEntity(apiError);

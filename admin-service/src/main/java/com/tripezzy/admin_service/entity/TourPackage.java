@@ -44,6 +44,17 @@ public class TourPackage extends Auditable{
     @JoinColumn(name = "destination_id", nullable = false)
     private Destination destination;
 
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     public Long getId() {
         return id;
     }
