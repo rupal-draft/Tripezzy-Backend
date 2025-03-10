@@ -79,7 +79,7 @@ public class DestinationController {
         return ResponseEntity.ok(destinationService.filterDestinations(country, category, minPrice, maxPrice));
     }
 
-    public ResponseEntity<String> rateLimitFallback(Long blogId, RuntimeConflict e) {
+    public ResponseEntity<String> rateLimitFallback() {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                 .body("Too many requests. Please try again later.");
     }

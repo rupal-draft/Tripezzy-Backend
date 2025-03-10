@@ -41,7 +41,7 @@ public class WishlistController {
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<String> rateLimitFallback(Long blogId, RuntimeConflict e) {
+    public ResponseEntity<String> rateLimitFallback() {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                 .body("Too many requests. Please try again later.");
     }

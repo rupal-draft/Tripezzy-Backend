@@ -85,7 +85,7 @@ public class TourController {
         return ResponseEntity.ok(tourService.filterTours(destinationId,minPrice, maxPrice, category,status));
     }
 
-    public ResponseEntity<String> rateLimitFallback(Long blogId, RuntimeConflict e) {
+    public ResponseEntity<String> rateLimitFallback() {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                 .body("Too many requests. Please try again later.");
     }

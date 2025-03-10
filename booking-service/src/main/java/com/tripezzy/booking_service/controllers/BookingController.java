@@ -172,7 +172,7 @@ public class BookingController {
         return ResponseEntity.ok(filteredBookings);
     }
 
-    public ResponseEntity<String> rateLimitFallback(Long bookingId, RuntimeConflict e) {
+    public ResponseEntity<String> rateLimitFallback() {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                 .body("Too many requests. Please try again later.");
     }

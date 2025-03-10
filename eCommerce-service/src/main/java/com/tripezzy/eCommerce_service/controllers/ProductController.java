@@ -77,7 +77,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.searchProducts(query, pageable));
     }
 
-    public ResponseEntity<String> rateLimitFallback(Long blogId, RuntimeConflict e) {
+    public ResponseEntity<String> rateLimitFallback() {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                 .body("Too many requests. Please try again later.");
     }

@@ -1,0 +1,19 @@
+resilience4j:
+  ratelimiter:
+    instances:
+      signupLimiter:
+        limitForPeriod: 5
+        limitRefreshPeriod: 1m
+        timeoutDuration: 0
+      loginLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1m
+        timeoutDuration: 0
+      sellerOnboardLimiter:
+        limitForPeriod: 3
+        limitRefreshPeriod: 1h
+        timeoutDuration: 0
+      guideOnboardLimiter:
+        limitForPeriod: 3
+        limitRefreshPeriod: 1h
+        timeoutDuration: 0
