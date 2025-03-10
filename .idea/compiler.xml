@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="eCommerce-service" />
         <module name="user-service" />
+        <module name="payment-service" />
         <module name="blog-service" />
         <module name="admin-service" />
         <module name="booking-service" />
@@ -21,6 +22,7 @@
       <module name="blog-service" options="-parameters" />
       <module name="booking-service" options="-parameters" />
       <module name="eCommerce-service" options="-parameters" />
+      <module name="payment-service" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>
   </component>
