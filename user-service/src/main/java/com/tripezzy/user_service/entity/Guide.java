@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "guides", indexes = {
-    @Index(name = "idx_user_id", columnList = "user_id")
+    @Index(name = "idx_guide_id", columnList = "user_id")
 })
 public class Guide extends Auditable{
     @Id
