@@ -117,6 +117,9 @@ public class CartServiceImpl implements CartService {
                 .mapToDouble(item -> discountStrategy.applyDiscount(item) * item.getQuantity())
                 .sum();
 
+        cart.setTotalAmount(totalCost);
+        cartRepository.save(cart);
+
         log.info("Total cost calculated successfully for user ID: {}", userId);
         return totalCost;
     }

@@ -1,7 +1,6 @@
 package com.tripezzy.eCommerce_service.controllers;
 
 import com.tripezzy.eCommerce_service.dto.ProductDto;
-import com.tripezzy.eCommerce_service.exceptions.RuntimeConflict;
 import com.tripezzy.eCommerce_service.services.ProductService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.data.domain.Page;

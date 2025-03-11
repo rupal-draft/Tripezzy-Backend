@@ -24,6 +24,9 @@ public class Cart {
     @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "amount")
+    private Double totalAmount = 0.0;
+
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items;
 
@@ -73,5 +76,13 @@ public class Cart {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Double totalAmount) {
+        this.totalAmount = totalAmount;
     }
 }

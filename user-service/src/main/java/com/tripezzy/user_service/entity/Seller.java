@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "sellers", indexes = {
-        @Index(name = "idx_seller_id", columnList = "user_id")
+        @Index(name = "idx_seller_user_id", columnList = "user_id")
 })
 public class Seller extends Auditable{
 
