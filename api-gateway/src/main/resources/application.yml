@@ -1,0 +1,50 @@
+spring.application.name: ${SPRING_APPLICATION_NAME}
+eureka.client.service-url.defaultZone: ${EUREKA_SERVER_URL}
+server.port: ${SERVER_PORT}
+
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/v1/users/**
+          filters:
+            - StripPrefix=2
+
+        - id: admin-service
+          uri: lb://ADMIN-SERVICE
+          predicates:
+            - Path=/api/v1/admin/**
+          filters:
+            - StripPrefix=2
+
+        - id: booking-service
+          uri: lb://BOOKING-SERVICE
+          predicates:
+            - Path=/api/v1/bookings/**
+          filters:
+            - StripPrefix=2
+
+        - id: eCommerce-service
+          uri: lb://ECOMMERCE-SERVICE
+          predicates:
+            - Path=/api/v1/shop/**
+          filters:
+            - StripPrefix=2
+
+        - id: blog-service
+          uri: lb://BLOG-SERVICE
+          predicates:
+            - Path=/api/v1/blogs/**
+          filters:
+            - StripPrefix=2
+
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/v1/payments/**
+          filters:
+            - StripPrefix=2

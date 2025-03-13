@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/blogs")
+@RequestMapping(path = "/core")
 public class BlogController {
 
     private final BlogService blogService;
