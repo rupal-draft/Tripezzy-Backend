@@ -1,5 +1,6 @@
 package com.tripezzy.admin_service.controller;
 
+import com.tripezzy.admin_service.annotations.RoleRequired;
 import com.tripezzy.admin_service.dto.DestinationDto;
 import com.tripezzy.admin_service.service.DestinationService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
@@ -26,6 +27,7 @@ public class DestinationController {
 
     @PostMapping
     @RateLimiter(name = "createDestinationRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RoleRequired("ADMIN")
     public ResponseEntity<DestinationDto> createDestination(@Valid @RequestBody DestinationDto dto) {
         return ResponseEntity.ok(destinationService.createDestination(dto));
     }
@@ -44,12 +46,14 @@ public class DestinationController {
 
     @PutMapping("/{id}")
     @RateLimiter(name = "updateDestinationRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RoleRequired("ADMIN")
     public ResponseEntity<DestinationDto> updateDestination(@PathVariable Long id, @Valid @RequestBody DestinationDto dto) {
         return ResponseEntity.ok(destinationService.updateDestination(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @RateLimiter(name = "deleteDestinationRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RoleRequired("ADMIN")
     public ResponseEntity<String> deleteDestination(@PathVariable Long id) {
         destinationService.deleteDestination(id);
         return ResponseEntity.ok("Destination deleted successfully.");
@@ -57,6 +61,7 @@ public class DestinationController {
 
     @DeleteMapping("/soft-delete/{id}")
     @RateLimiter(name = "softDeleteDestinationRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RoleRequired("ADMIN")
     public ResponseEntity<String> softDeleteDestination(@PathVariable Long id) {
         destinationService.softDeleteDestination(id);
         return ResponseEntity.ok("Destination soft deleted successfully.");

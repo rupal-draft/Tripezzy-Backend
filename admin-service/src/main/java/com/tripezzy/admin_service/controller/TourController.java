@@ -1,5 +1,6 @@
 package com.tripezzy.admin_service.controller;
 
+import com.tripezzy.admin_service.annotations.RoleRequired;
 import com.tripezzy.admin_service.dto.TourDto;
 import com.tripezzy.admin_service.service.TourService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
@@ -26,6 +27,7 @@ public class TourController {
 
     @PostMapping
     @RateLimiter(name = "createTourRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RoleRequired("ADMIN")
     public ResponseEntity<TourDto> createTour(@Valid @RequestBody TourDto dto) {
         return ResponseEntity.ok(tourService.createTour(dto));
     }
@@ -50,12 +52,14 @@ public class TourController {
 
     @PutMapping("/{id}")
     @RateLimiter(name = "updateTourRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RoleRequired("ADMIN")
     public ResponseEntity<TourDto> updateTour(@PathVariable Long id, @Valid @RequestBody TourDto dto) {
         return ResponseEntity.ok(tourService.updateTour(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @RateLimiter(name = "deleteTourRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RoleRequired("ADMIN")
     public ResponseEntity<String> deleteTour(@PathVariable Long id) {
         tourService.deleteTour(id);
         return ResponseEntity.ok("Tour deleted successfully.");
@@ -63,6 +67,7 @@ public class TourController {
 
     @DeleteMapping("/soft-delete/{id}")
     @RateLimiter(name = "softDeleteTourRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RoleRequired("ADMIN")
     public ResponseEntity<String> softDeleteTour(@PathVariable Long id) {
         tourService.softDeleteTour(id);
         return ResponseEntity.ok("Tour soft deleted successfully.");
