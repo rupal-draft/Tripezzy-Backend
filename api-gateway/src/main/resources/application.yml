@@ -2,6 +2,9 @@ spring.application.name: ${SPRING_APPLICATION_NAME}
 eureka.client.service-url.defaultZone: ${EUREKA_SERVER_URL}
 server.port: ${SERVER_PORT}
 
+jwt:
+  secretKey: ${JWT_SECRET_KEY}
+
 
 spring:
   cloud:
@@ -13,6 +16,7 @@ spring:
             - Path=/api/v1/users/**
           filters:
             - StripPrefix=2
+            - name: AuthenticationFilter
 
         - id: admin-service
           uri: lb://ADMIN-SERVICE
@@ -20,6 +24,7 @@ spring:
             - Path=/api/v1/admin/**
           filters:
             - StripPrefix=2
+            - name: AuthenticationFilter
 
         - id: booking-service
           uri: lb://BOOKING-SERVICE
@@ -27,6 +32,7 @@ spring:
             - Path=/api/v1/bookings/**
           filters:
             - StripPrefix=2
+            - name: AuthenticationFilter
 
         - id: eCommerce-service
           uri: lb://ECOMMERCE-SERVICE
@@ -34,6 +40,7 @@ spring:
             - Path=/api/v1/shop/**
           filters:
             - StripPrefix=2
+            - name: AuthenticationFilter
 
         - id: blog-service
           uri: lb://BLOG-SERVICE
@@ -41,6 +48,7 @@ spring:
             - Path=/api/v1/blogs/**
           filters:
             - StripPrefix=2
+            - name: AuthenticationFilter
 
         - id: payment-service
           uri: lb://PAYMENT-SERVICE
@@ -48,3 +56,4 @@ spring:
             - Path=/api/v1/payments/**
           filters:
             - StripPrefix=2
+            - name: AuthenticationFilter

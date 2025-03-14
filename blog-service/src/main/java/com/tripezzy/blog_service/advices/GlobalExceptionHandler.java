@@ -1,6 +1,7 @@
 package com.tripezzy.blog_service.advices;
 
 
+import com.tripezzy.blog_service.exceptions.AccessForbidden;
 import com.tripezzy.blog_service.exceptions.IllegalState;
 import com.tripezzy.blog_service.exceptions.ResourceNotFound;
 import com.tripezzy.blog_service.exceptions.RuntimeConflict;
@@ -35,6 +36,16 @@ public class GlobalExceptionHandler {
         logger.error("Runtime conflict: {}", exception.getMessage());
         ApiError apiError = new ApiError.ApiErrorBuilder()
                 .setStatus(HttpStatus.CONFLICT)
+                .setMessage(exception.getLocalizedMessage())
+                .build();
+        return buildErrorResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(AccessForbidden.class)
+    public ResponseEntity<ApiResponse<?>> handleForbiddenAccess (AccessForbidden exception) {
+        logger.error("Access forbidden: {}", exception.getMessage());
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .setStatus(HttpStatus.FORBIDDEN)
                 .setMessage(exception.getLocalizedMessage())
                 .build();
         return buildErrorResponseEntity(apiError);

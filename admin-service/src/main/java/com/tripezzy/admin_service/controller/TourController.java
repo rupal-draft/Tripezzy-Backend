@@ -1,7 +1,6 @@
 package com.tripezzy.admin_service.controller;
 
 import com.tripezzy.admin_service.dto.TourDto;
-import com.tripezzy.admin_service.exceptions.RuntimeConflict;
 import com.tripezzy.admin_service.service.TourService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.validation.Valid;

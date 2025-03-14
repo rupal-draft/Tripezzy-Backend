@@ -36,14 +36,4 @@ public class JwtService {
                 .signWith(getSecretKey())
                 .compact();
     }
-    public Long getUserId(String token){
-        Claims claims = Jwts
-                .parser()
-                .verifyWith(getSecretKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-
-        return Long.valueOf(claims.getSubject());
-    }
 }

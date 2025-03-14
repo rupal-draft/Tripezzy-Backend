@@ -21,7 +21,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping(path = "/signup")
+    @PostMapping(path = "/register")
     @RateLimiter(name = "signupLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<UserDto> signup(@RequestBody UserRegisterDto signupDto){
         UserDto user = authService.signup(signupDto);

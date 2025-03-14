@@ -1,5 +1,6 @@
 package com.tripezzy.booking_service.advices;
 
+import com.tripezzy.booking_service.exception.AccessForbidden;
 import com.tripezzy.booking_service.exception.IllegalState;
 import com.tripezzy.booking_service.exception.ResourceNotFound;
 import com.tripezzy.booking_service.exception.RuntimeConflict;
@@ -43,6 +44,16 @@ public class GlobalExceptionHandler {
         logger.error("Illegal state: {}", exception.getMessage());
         ApiError apiError = new ApiError.ApiErrorBuilder()
                 .setStatus(HttpStatus.BAD_REQUEST)
+                .setMessage(exception.getLocalizedMessage())
+                .build();
+        return buildErrorResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(AccessForbidden.class)
+    public ResponseEntity<ApiResponse<?>> handleForbiddenAccess (AccessForbidden exception) {
+        logger.error("Access forbidden: {}", exception.getMessage());
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .setStatus(HttpStatus.FORBIDDEN)
                 .setMessage(exception.getLocalizedMessage())
                 .build();
         return buildErrorResponseEntity(apiError);

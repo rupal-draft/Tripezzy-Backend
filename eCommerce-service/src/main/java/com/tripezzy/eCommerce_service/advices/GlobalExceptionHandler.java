@@ -1,5 +1,6 @@
 package com.tripezzy.eCommerce_service.advices;
 
+import com.tripezzy.eCommerce_service.exceptions.AccessForbidden;
 import com.tripezzy.eCommerce_service.exceptions.IllegalState;
 import com.tripezzy.eCommerce_service.exceptions.ResourceNotFound;
 import com.tripezzy.eCommerce_service.exceptions.RuntimeConflict;
@@ -30,6 +31,16 @@ public class GlobalExceptionHandler {
                 .setStatus(HttpStatus.NOT_FOUND)
                 .build();
 
+        return buildErrorResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(AccessForbidden.class)
+    public ResponseEntity<ApiResponse<?>> handleForbiddenAccess (AccessForbidden exception) {
+        logger.error("Access forbidden: {}", exception.getMessage());
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .setStatus(HttpStatus.FORBIDDEN)
+                .setMessage(exception.getLocalizedMessage())
+                .build();
         return buildErrorResponseEntity(apiError);
     }
 

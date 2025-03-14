@@ -1,6 +1,7 @@
 package com.tripezzy.user_service.advices;
 
 
+import com.tripezzy.user_service.exceptions.AccessForbidden;
 import com.tripezzy.user_service.exceptions.IllegalState;
 import com.tripezzy.user_service.exceptions.ResourceNotFound;
 import com.tripezzy.user_service.exceptions.RuntimeConflict;
@@ -45,6 +46,16 @@ public class GlobalExceptionHandler {
         logger.error("Illegal state: {}", exception.getMessage());
         ApiError apiError = new ApiError.ApiErrorBuilder()
                 .setStatus(HttpStatus.BAD_REQUEST)
+                .setMessage(exception.getLocalizedMessage())
+                .build();
+        return buildErrorResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(AccessForbidden.class)
+    public ResponseEntity<ApiResponse<?>> handleForbiddenAccess (AccessForbidden exception) {
+        logger.error("Access forbidden: {}", exception.getMessage());
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .setStatus(HttpStatus.FORBIDDEN)
                 .setMessage(exception.getLocalizedMessage())
                 .build();
         return buildErrorResponseEntity(apiError);

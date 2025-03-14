@@ -1,10 +1,7 @@
 package com.tripezzy.admin_service.advices;
 
 
-import com.tripezzy.admin_service.exceptions.DataIntegrityViolation;
-import com.tripezzy.admin_service.exceptions.IllegalState;
-import com.tripezzy.admin_service.exceptions.ResourceNotFound;
-import com.tripezzy.admin_service.exceptions.RuntimeConflict;
+import com.tripezzy.admin_service.exceptions.*;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +33,16 @@ public class GlobalExceptionHandler {
         logger.error("Runtime conflict: {}", exception.getMessage());
         ApiError apiError = new ApiError.ApiErrorBuilder()
                 .setStatus(HttpStatus.CONFLICT)
+                .setMessage(exception.getLocalizedMessage())
+                .build();
+        return buildErrorResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(AccessForbidden.class)
+    public ResponseEntity<ApiResponse<?>> handleForbiddenAccess (AccessForbidden exception) {
+        logger.error("Access forbidden: {}", exception.getMessage());
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .setStatus(HttpStatus.FORBIDDEN)
                 .setMessage(exception.getLocalizedMessage())
                 .build();
         return buildErrorResponseEntity(apiError);
