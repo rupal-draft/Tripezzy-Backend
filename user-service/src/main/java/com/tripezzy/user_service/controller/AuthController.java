@@ -2,7 +2,6 @@ package com.tripezzy.user_service.controller;
 
 import com.tripezzy.user_service.annotations.RoleRequired;
 import com.tripezzy.user_service.dto.*;
-import com.tripezzy.user_service.exceptions.RuntimeConflict;
 import com.tripezzy.user_service.service.AuthService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.http.HttpStatus;

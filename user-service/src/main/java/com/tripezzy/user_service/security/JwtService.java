@@ -2,7 +2,6 @@ package com.tripezzy.user_service.security;
 
 import com.tripezzy.user_service.entity.User;
 import com.tripezzy.user_service.exceptions.IllegalState;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;

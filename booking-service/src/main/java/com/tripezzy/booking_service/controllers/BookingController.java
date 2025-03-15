@@ -2,7 +2,6 @@ package com.tripezzy.booking_service.controllers;
 
 import com.tripezzy.booking_service.dto.BookingDto;
 import com.tripezzy.booking_service.entity.enums.Status;
-import com.tripezzy.booking_service.exception.RuntimeConflict;
 import com.tripezzy.booking_service.service.BookingService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.data.domain.Page;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/core")
