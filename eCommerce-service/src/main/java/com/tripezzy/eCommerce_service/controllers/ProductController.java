@@ -1,5 +1,6 @@
 package com.tripezzy.eCommerce_service.controllers;
 
+import com.tripezzy.eCommerce_service.annotations.RoleRequired;
 import com.tripezzy.eCommerce_service.dto.ProductDto;
 import com.tripezzy.eCommerce_service.services.ProductService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
@@ -20,6 +21,7 @@ public class ProductController {
     }
 
     @PostMapping
+    @RoleRequired("SELLER")
     @RateLimiter(name = "productRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
         ProductDto createdProduct = productService.createProduct(productDto);
@@ -38,6 +40,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
+    @RoleRequired("SELLER")
     @RateLimiter(name = "productRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<ProductDto> updateProduct(
             @PathVariable Long productId,
@@ -47,6 +50,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
+    @RoleRequired("SELLER")
     @RateLimiter(name = "productRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
         productService.deleteProduct(productId);
@@ -64,6 +68,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/soft-delete/{productId}")
+    @RoleRequired("SELLER")
     @RateLimiter(name = "productRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<Void> softDeleteProduct(@PathVariable Long productId) {
         productService.softDeleteProduct(productId);

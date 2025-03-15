@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package booking;
+
+option java_multiple_files = true;
+option java_package = "com.tripezzy.booking_service.grpc";
+
+service BookingService {
+    rpc GetAllBookings (BookingRequest) returns (BookingResponse);
+    rpc GetBookingsByUserId (UserBookingsRequest) returns (BookingResponse);
+    rpc GetBookingsByDestinationId (DestinationBookingsRequest) returns (BookingResponse);
+    rpc GetBookingsByTravelDateRange (DateRangeRequest) returns (BookingResponse);
+    rpc SoftDeleteBooking (DeleteBookingRequest) returns (DeleteBookingResponse);
+    rpc GetBookingsByPaymentStatus (PaymentStatusRequest) returns (BookingResponse);
+    rpc ConfirmBooking (ConfirmBookingRequest) returns (BookingResponseSingle);
+}
+
+message BookingRequest {
+    int32 page = 1;
+    int32 size = 2;
+}
+
+message UserBookingsRequest {
+    int64 userId = 1;
+    int32 page = 2;
+    int32 size = 3;
+}
+
+message DestinationBookingsRequest {
+    int64 destinationId = 1;
+    int32 page = 2;
+    int32 size = 3;
+}
+
+message DateRangeRequest {
+    string startDate = 1;
+    string endDate = 2;
+    int32 page = 3;
+    int32 size = 4;
+}
+
+message DeleteBookingRequest {
+    int64 bookingId = 1;
+}
+
+message DeleteBookingResponse {
+    bool success = 1;
+}
+
+message PaymentStatusRequest {
+    string paymentStatus = 1;
+}
+
+message ConfirmBookingRequest {
+    int64 bookingId = 1;
+}
+
+message Booking {
+    int64 bookingId = 1;
+    string firstName = 2;
+    string lastName = 3;
+    string email = 4;
+    string phoneNumber = 5;
+    int64 userId = 6;
+    int64 destinationId = 7;
+    string travelDate = 8;
+    double totalPrice = 9;
+}
+
+message BookingResponse {
+    repeated Booking bookings = 1;
+}
+
+message BookingResponseSingle {
+    Booking booking = 1;
+}

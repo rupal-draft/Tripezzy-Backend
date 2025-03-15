@@ -17,4 +17,49 @@ public class BlogResponseDto {
     private BlogStatus status;
     private String category;
     private String tag;
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    public List<LikeDto> getLikes() {
+        return likes;
+    }
+
+    public List<CommentDto> getComments() {
+        return comments;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public BlogStatus getStatus() {
+        return status;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getTag() {
+        return tag;
+    }
 }

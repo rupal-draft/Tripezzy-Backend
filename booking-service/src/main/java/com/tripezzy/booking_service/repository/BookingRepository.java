@@ -32,9 +32,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> , JpaSpe
     @Cacheable("bookingsByTravelDateRange")
     Page<Booking> findByTravelDateBetween(LocalDate startDate, LocalDate endDate, Pageable pageable);
 
-    @Cacheable("bookingByReference")
-    Optional<Booking> findByBookingReference(String bookingReference);
-
     @Cacheable("bookingsByPaymentStatus")
     List<Booking> findByPaymentStatus(String paymentStatus);
 

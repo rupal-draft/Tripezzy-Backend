@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package blog;
+
+option java_multiple_files = true;
+
+service BlogService {
+    rpc GetAllBlogs (BlogRequest) returns (BlogResponse);
+}
+
+message BlogRequest {
+    int32 page = 1;
+    int32 size = 2;
+}
+
+message Blog {
+    int64 id = 1;
+    string title = 2;
+    string content = 3;
+    int64 authorId = 4;
+    string category = 5;
+    string tag = 6;
+}
+
+message BlogResponse {
+    repeated Blog blogs = 1;
+}

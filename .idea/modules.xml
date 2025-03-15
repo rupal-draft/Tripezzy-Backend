@@ -3,6 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Tripezzy-Backend.iml" filepath="$PROJECT_DIR$/.idea/Tripezzy-Backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/admin-service/admin-service.iml" filepath="$PROJECT_DIR$/admin-service/admin-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/blog-service/blog-service.iml" filepath="$PROJECT_DIR$/blog-service/blog-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/booking-service/booking-service.iml" filepath="$PROJECT_DIR$/booking-service/booking-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eCommerce-service/eCommerce-service.iml" filepath="$PROJECT_DIR$/eCommerce-service/eCommerce-service.iml" />
     </modules>
   </component>
 </project>

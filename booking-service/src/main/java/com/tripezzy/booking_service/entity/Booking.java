@@ -81,10 +81,6 @@ public class Booking {
     @NotNull(message = "Payment status cannot be null")
     private String paymentStatus = "PENDING";
 
-    @Column(name = "booking_reference", unique = true)
-    @NotNull(message = "Booking reference cannot be null")
-    private String bookingReference;
-
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -99,7 +95,7 @@ public class Booking {
     public Booking() {
     }
 
-    public Booking(Long id, String firstName, String lastName, String email, String phoneNumber, Long userId, Long destinationId, LocalDateTime bookingDate, LocalDate travelDate, Status status, BigDecimal totalPrice, String paymentStatus, String bookingReference) {
+    public Booking(Long id, String firstName, String lastName, String email, String phoneNumber, Long userId, Long destinationId, LocalDateTime bookingDate, LocalDate travelDate, Status status, BigDecimal totalPrice, String paymentStatus) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -112,7 +108,6 @@ public class Booking {
         this.status = status;
         this.totalPrice = totalPrice;
         this.paymentStatus = paymentStatus;
-        this.bookingReference = bookingReference;
     }
 
     // Getters and Setters
@@ -210,14 +205,6 @@ public class Booking {
 
     public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
-    }
-
-    public String getBookingReference() {
-        return bookingReference;
-    }
-
-    public void setBookingReference(String bookingReference) {
-        this.bookingReference = bookingReference;
     }
 
     public LocalDateTime getCreatedAt() {

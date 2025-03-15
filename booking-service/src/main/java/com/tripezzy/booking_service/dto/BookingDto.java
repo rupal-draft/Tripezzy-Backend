@@ -42,6 +42,7 @@ public class BookingDto {
     @Positive(message = "Total price must be positive")
     private BigDecimal totalPrice;
 
+
     public BookingDto() {
     }
 

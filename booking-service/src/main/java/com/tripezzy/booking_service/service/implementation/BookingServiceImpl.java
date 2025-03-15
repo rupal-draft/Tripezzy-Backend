@@ -159,14 +159,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Cacheable(value = "bookingByReference", key = "#bookingReference")
-    public Optional<BookingDto> getBookingByReference(String bookingReference) {
-        log.info("Fetching booking by reference: " + bookingReference);
-        Optional<Booking> booking = bookingRepository.findByBookingReference(bookingReference);
-        return booking.map(b -> modelMapper.map(b, BookingDto.class));
-    }
-
-    @Override
     @Cacheable(value = "bookingsByPaymentStatus", key = "#paymentStatus")
     public List<BookingDto> getBookingsByPaymentStatus(String paymentStatus) {
         log.info("Fetching bookings by payment status: " + paymentStatus);

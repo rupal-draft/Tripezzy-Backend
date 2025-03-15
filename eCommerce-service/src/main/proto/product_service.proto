@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package product;
+
+option java_multiple_files = true;
+option java_package = "com.tripezzy.product_service.grpc";
+
+service ProductService {
+    rpc GetAllProducts (ProductRequest) returns (ProductResponse);
+}
+
+message ProductRequest {
+    int32 page = 1;
+    int32 size = 2;
+}
+
+message Product {
+    string name = 1;
+    string description = 2;
+    double price = 3;
+    int32 stock = 4;
+    string category = 5;
+    string imageUrl = 6;
+}
+
+message ProductResponse {
+    repeated Product products = 1;
+}

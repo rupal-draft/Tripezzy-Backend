@@ -133,14 +133,6 @@ public class BookingController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/reference/{bookingReference}")
-    @RateLimiter(name = "bookingReferenceRateLimiter", fallbackMethod = "rateLimitFallback")
-    public ResponseEntity<BookingDto> getBookingByReference(@PathVariable String bookingReference) {
-        Optional<BookingDto> booking = bookingService.getBookingByReference(bookingReference);
-        return booking.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
     @GetMapping("/payment-status/{paymentStatus}")
     @RateLimiter(name = "paymentStatusRateLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<List<BookingDto>> getBookingsByPaymentStatus(@PathVariable String paymentStatus) {
