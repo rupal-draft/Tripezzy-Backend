@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package payment;
+
+option java_multiple_files = true;
+option java_package = "com.tripezzy.payment_service.grpc";
+
+service PaymentService {
+    rpc GetAllPayments (EmptyRequest) returns (PaymentsResponseList);
+    rpc GetAllPaymentsByUserId (UserPaymentsRequest) returns (PaymentsResponseList);
+}
+
+message EmptyRequest {}
+
+message UserPaymentsRequest {
+    int64 userId = 1;
+}
+
+message PaymentsResponse {
+    int64 id = 1;
+    int64 userId = 2;
+    int64 referenceId = 3;
+    string sessionId = 4;
+    string status = 5;
+    int64 amount = 6;
+    string currency = 7;
+    string name = 8;
+    string category = 9;
+    int64 quantity = 10;
+    string createdAt = 11;
+}
+
+message PaymentsResponseList {
+    repeated PaymentsResponse payments = 1;
+}

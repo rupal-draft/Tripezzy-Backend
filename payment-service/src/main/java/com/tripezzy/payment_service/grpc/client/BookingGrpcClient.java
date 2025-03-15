@@ -1,4 +1,4 @@
-package com.tripezzy.payment_service.grpc;
+package com.tripezzy.payment_service.grpc.client;
 
 import com.tripezzy.booking_service.grpc.BookingPaymentRequest;
 import com.tripezzy.booking_service.grpc.BookingPaymentResponse;

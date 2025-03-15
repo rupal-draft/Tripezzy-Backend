@@ -1,4 +1,4 @@
-package com.tripezzy.blog_service.service.grpc;
+package com.tripezzy.blog_service.grpc;
 
 import blog.BlogRequest;
 import blog.BlogResponse;

@@ -2,7 +2,7 @@ package com.tripezzy.payment_service.dto;
 
 import com.tripezzy.payment_service.entity.enums.PaymentStatus;
 
-public class PaymentResponse {
+public class ResponseEcomPayment {
     private PaymentStatus status;
     private String message;
     private String sessionId;
@@ -43,7 +43,7 @@ public class PaymentResponse {
         return currency;
     }
 
-    public PaymentResponse(PaymentResponseBuilder builder) {
+    public ResponseEcomPayment(PaymentResponseBuilder builder) {
         this.status = builder.status;
         this.message = builder.message;
         this.sessionId = builder.sessionId;
@@ -104,8 +104,8 @@ public class PaymentResponse {
             return this;
         }
 
-        public PaymentResponse build() {
-            return new PaymentResponse(this);
+        public ResponseEcomPayment build() {
+            return new ResponseEcomPayment(this);
         }
     }
 }

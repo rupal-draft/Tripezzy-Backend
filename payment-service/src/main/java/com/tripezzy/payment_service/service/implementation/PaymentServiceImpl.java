@@ -5,7 +5,8 @@ import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.tripezzy.booking_service.grpc.BookingPaymentResponse;
 import com.tripezzy.eCommerce_service.grpc.CartPaymentResponse;
-import com.tripezzy.payment_service.dto.PaymentResponse;
+import com.tripezzy.payment_service.dto.PaymentsResponse;
+import com.tripezzy.payment_service.dto.ResponseEcomPayment;
 import com.tripezzy.payment_service.dto.ResponseBookingPayment;
 import com.tripezzy.payment_service.entity.Payment;
 import com.tripezzy.payment_service.entity.enums.PaymentCategory;
@@ -16,11 +17,13 @@ import com.tripezzy.payment_service.service.PaymentService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -36,7 +39,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public PaymentResponse checkoutProducts(CartPaymentResponse paymentRequest, Long cartId, Long userId) {
+    public ResponseEcomPayment checkoutProducts(CartPaymentResponse paymentRequest, Long cartId, Long userId) {
         return processCheckout(paymentRequest.getName(), paymentRequest.getAmount(), paymentRequest.getQuantity(),
                 cartId, userId, PaymentCategory.ECOM);
     }
@@ -44,7 +47,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public ResponseBookingPayment checkoutBooking(BookingPaymentResponse paymentDetails, Long bookingId, Long userId) {
-        PaymentResponse response = processCheckout(paymentDetails.getName(), paymentDetails.getAmount(), 1L,
+        ResponseEcomPayment response = processCheckout(paymentDetails.getName(), paymentDetails.getAmount(), 1L,
                 bookingId, userId, PaymentCategory.BOOKING);
         return new ResponseBookingPayment.PaymentResponseBuilder()
                 .status(response.getStatus())
@@ -56,8 +59,8 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
     }
 
-    private PaymentResponse processCheckout(String name, double amount, Long quantity, Long referenceId,
-                                            Long userId, PaymentCategory category) {
+    private ResponseEcomPayment processCheckout(String name, double amount, Long quantity, Long referenceId,
+                                                Long userId, PaymentCategory category) {
         log.info("Processing checkout for reference ID: {}", referenceId);
         try {
             String currency = "USD";
@@ -67,7 +70,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             log.info("Stripe session created successfully: {}", session.getId());
 
-            PaymentResponse paymentResponse = new PaymentResponse.PaymentResponseBuilder()
+            ResponseEcomPayment paymentResponse = new ResponseEcomPayment.PaymentResponseBuilder()
                     .sessionId(session.getId())
                     .sessionUrl(session.getUrl())
                     .status(PaymentStatus.PENDING)
@@ -116,7 +119,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .build());
     }
 
-    private void savePayment(PaymentResponse paymentResponse, Long referenceId, Long userId, PaymentCategory category) {
+    private void savePayment(ResponseEcomPayment paymentResponse, Long referenceId, Long userId, PaymentCategory category) {
         Payment payment = modelMapper.map(paymentResponse, Payment.class);
         payment.setUserId(userId);
         payment.setReferenceId(referenceId);
@@ -125,14 +128,42 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentResponse confirmPayment(String sessionId) {
+    public ResponseEcomPayment confirmPayment(String sessionId) {
         Payment payment = paymentRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new ResourceNotFound("Payment not found", HttpStatus.NOT_FOUND));
 
         payment.setStatus(PaymentStatus.CONFIRMED);
         paymentRepository.save(payment);
 
-        return modelMapper.map(payment, PaymentResponse.class);
+        return modelMapper.map(payment, ResponseEcomPayment.class);
+    }
+
+    @Override
+    @Cacheable(value = "payments", key = "payments")
+    public List<PaymentsResponse> getAllPayments() {
+
+        log.info("Fetching all payments");
+        List<Payment> payments = paymentRepository.findAll();
+
+        return payments
+                .stream()
+                .map(payment -> modelMapper
+                        .map(payment, PaymentsResponse.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Cacheable(value = "payments", key = "#userId")
+    public List<PaymentsResponse> getAllPaymentsByUserId(Long userId) {
+
+        log.info("Fetching all payments for user {}", userId);
+        List<Payment> payments = paymentRepository.findByUserId(userId);
+
+        return payments
+                .stream()
+                .map(payment -> modelMapper
+                        .map(payment, PaymentsResponse.class))
+                .collect(Collectors.toList());
     }
 }
 

@@ -1,4 +1,4 @@
-package com.tripezzy.payment_service.grpc;
+package com.tripezzy.payment_service.grpc.client;
 
 import com.tripezzy.eCommerce_service.grpc.CartPaymentResponse;
 import com.tripezzy.eCommerce_service.grpc.CartRequest;

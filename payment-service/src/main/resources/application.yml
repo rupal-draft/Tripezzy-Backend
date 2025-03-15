@@ -1,0 +1,19 @@
+resilience4j:
+  ratelimiter:
+    instances:
+      checkoutProducts:
+        limitForPeriod: 5
+        limitRefreshPeriod: 5m
+        timeoutDuration: 1s
+      checkoutBookings:
+        limitForPeriod: 5
+        limitRefreshPeriod: 5m
+        timeoutDuration: 1s
+      paymentsRateLimiter:
+        limitForPeriod: 5
+        limitRefreshPeriod: 5m
+        timeoutDuration: 1s
+      userPaymentsRateLimiter:
+        limitForPeriod: 5
+        limitRefreshPeriod: 5m
+        timeoutDuration: 1s

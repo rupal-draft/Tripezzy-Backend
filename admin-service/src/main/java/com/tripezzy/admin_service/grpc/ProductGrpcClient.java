@@ -6,6 +6,7 @@ import com.tripezzy.product_service.grpc.ProductResponse;
 import com.tripezzy.product_service.grpc.ProductServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class ProductGrpcClient {
         productStub = ProductServiceGrpc.newBlockingStub(channel);
     }
 
+    @Cacheable(value = "products", key = "products + '-' + #page + '-' + #size")
     public List<Product> getAllProducts(int page, int size) {
         ProductRequest request = ProductRequest.newBuilder()
                 .setPage(page)

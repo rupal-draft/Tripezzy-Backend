@@ -6,6 +6,7 @@ import blog.BlogResponse;
 import blog.BlogServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class BlogGrpcClient {
         stub = BlogServiceGrpc.newBlockingStub(channel);
     }
 
-
+    @Cacheable(value = "blogs", key = "#page + '-' + #size")
     public List<Blog> getAllBlogs(int page, int size) {
         BlogRequest request = BlogRequest.newBuilder()
                 .setPage(page)
