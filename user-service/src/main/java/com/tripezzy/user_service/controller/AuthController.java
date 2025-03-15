@@ -1,5 +1,6 @@
 package com.tripezzy.user_service.controller;
 
+import com.tripezzy.user_service.annotations.RoleRequired;
 import com.tripezzy.user_service.dto.*;
 import com.tripezzy.user_service.exceptions.RuntimeConflict;
 import com.tripezzy.user_service.service.AuthService;
@@ -36,6 +37,7 @@ public class AuthController {
     }
 
     @PostMapping(path = "/onboard/seller")
+    @RoleRequired("ADMIN")
     @RateLimiter(name = "sellerOnboardLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<UserDto> onboardSeller(@RequestBody OnboardSellerDto onboardSellerDto){
         UserDto seller = authService.onboardSeller(onboardSellerDto);
@@ -43,6 +45,7 @@ public class AuthController {
     }
 
     @PostMapping(path = "/onboard/guide")
+    @RoleRequired("ADMIN")
     @RateLimiter(name = "guideOnboardLimiter", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<UserDto> onboardGuide(@RequestBody OnboardGuideDto onboardGuideDto){
         UserDto guide = authService.onboardGuide(onboardGuideDto);

@@ -1,7 +1,11 @@
 package com.tripezzy.payment_service.controller;
 
-import com.tripezzy.payment_service.dto.PaymentRequest;
+import com.tripezzy.booking_service.grpc.BookingPaymentResponse;
+import com.tripezzy.eCommerce_service.grpc.CartPaymentResponse;
+import com.tripezzy.payment_service.dto.ResponseBookingPayment;
 import com.tripezzy.payment_service.dto.PaymentResponse;
+import com.tripezzy.payment_service.grpc.BookingGrpcClient;
+import com.tripezzy.payment_service.grpc.CartGrpcClient;
 import com.tripezzy.payment_service.service.PaymentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,16 +15,27 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final CartGrpcClient cartGrpcClient;
+    private final BookingGrpcClient bookingGrpcClient;
 
-    public PaymentController(PaymentService paymentService) {
+    public PaymentController(PaymentService paymentService, CartGrpcClient cartGrpcClient, BookingGrpcClient bookingGrpcClient) {
         this.paymentService = paymentService;
+        this.cartGrpcClient = cartGrpcClient;
+        this.bookingGrpcClient = bookingGrpcClient;
     }
 
-    @PostMapping("/checkout/{productId}")
-    public ResponseEntity<PaymentResponse> checkoutProducts(@RequestBody  PaymentRequest paymentRequest,
-                                                            @PathVariable Long productId,
+    @PostMapping("/checkout/{cartId}")
+    public ResponseEntity<PaymentResponse> checkoutProducts(@PathVariable Long cartId,
                                                             @RequestParam(required = true) Long userId) {
-        return ResponseEntity.ok(paymentService.checkoutProducts(paymentRequest, productId, userId));
+        CartPaymentResponse paymentDetails = cartGrpcClient.getPaymentDetails(cartId);
+        return ResponseEntity.ok(paymentService.checkoutProducts(paymentDetails,cartId,userId));
+    }
+
+    @PostMapping("/checkout/{bookingId}")
+    public ResponseEntity<ResponseBookingPayment> checkoutBookings(@PathVariable Long bookingId,
+                                                                   @RequestParam(required = true) Long userId) {
+        BookingPaymentResponse paymentDetails = bookingGrpcClient.getBookingPayment(bookingId);
+        return ResponseEntity.ok(paymentService.checkoutBooking(paymentDetails,bookingId,userId));
     }
 
     @PutMapping("/success")

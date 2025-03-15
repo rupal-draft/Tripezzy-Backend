@@ -1,6 +1,7 @@
 package com.tripezzy.booking_service.grpc;
 
 import com.tripezzy.booking_service.dto.BookingDto;
+import com.tripezzy.booking_service.dto.BookingPaymentDto;
 import com.tripezzy.booking_service.service.BookingService;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -86,6 +87,21 @@ public class BookingGrpcService extends BookingServiceGrpc.BookingServiceImplBas
 
         BookingResponseSingle response = BookingResponseSingle.newBuilder()
                 .setBooking(convertToGrpcBooking(confirmedBooking))
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getBookingPayment(BookingPaymentRequest request, StreamObserver<BookingPaymentResponse> responseObserver) {
+        BookingPaymentDto booking = bookingService.getBookingPayment(request.getBookingId());
+
+        BookingPaymentResponse response = BookingPaymentResponse.newBuilder()
+                .setAmount(booking.getAmount().doubleValue())
+                .setQuantity(1)
+                .setName(booking.getName())
+                .setCurrency(booking.getCurrency())
                 .build();
 
         responseObserver.onNext(response);

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package cart;
+
+option java_multiple_files = true;
+option java_package = "com.tripezzy.eCommerce_service.grpc";
+
+service CartService {
+    rpc GetPaymentDetails (CartRequest) returns (CartPaymentResponse);
+}
+
+message CartRequest {
+    int64 cartId = 1;
+}
+
+message CartPaymentResponse {
+    double amount = 1;
+    int64 quantity = 2;
+    string name = 3;
+    string currency = 4;
+}

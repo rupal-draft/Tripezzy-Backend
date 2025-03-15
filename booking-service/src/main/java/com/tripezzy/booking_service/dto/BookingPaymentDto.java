@@ -1,18 +1,19 @@
-package com.tripezzy.payment_service.dto;
+package com.tripezzy.booking_service.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class PaymentRequest {
+import java.math.BigDecimal;
 
+public class BookingPaymentDto {
     @NotNull(message = "Amount is required")
     @Min(value = 1, message = "Amount must be at least 1")
-    private Long amount;
+    private BigDecimal amount;
 
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be at least 1")
-    private Long quantity;
+    private Long quantity = 1L;
 
     @NotBlank(message = "Product name is required")
     private String name;
@@ -20,11 +21,11 @@ public class PaymentRequest {
     @NotBlank(message = "Currency is required")
     private String currency;
 
-    public @NotNull(message = "Amount is required") @Min(value = 1, message = "Amount must be at least 1") Long getAmount() {
+    public @NotNull(message = "Amount is required") @Min(value = 1, message = "Amount must be at least 1") BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(@NotNull(message = "Amount is required") @Min(value = 1, message = "Amount must be at least 1") Long amount) {
+    public void setAmount(@NotNull(message = "Amount is required") @Min(value = 1, message = "Amount must be at least 1") BigDecimal amount) {
         this.amount = amount;
     }
 

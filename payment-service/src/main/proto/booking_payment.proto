@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package booking;
+
+option java_multiple_files = true;
+option java_package = "com.tripezzy.booking_service.grpc";
+
+service BookingService {
+    rpc GetBookingPayment (BookingPaymentRequest) returns (BookingPaymentResponse);
+}
+
+
+message BookingPaymentRequest {
+    int64 bookingId = 1;
+}
+
+message BookingPaymentResponse {
+    double amount = 1;
+    int64 quantity = 2;
+    string name = 3;
+    string currency = 4;
+}

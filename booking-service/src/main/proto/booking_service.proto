@@ -13,6 +13,7 @@ service BookingService {
     rpc SoftDeleteBooking (DeleteBookingRequest) returns (DeleteBookingResponse);
     rpc GetBookingsByPaymentStatus (PaymentStatusRequest) returns (BookingResponse);
     rpc ConfirmBooking (ConfirmBookingRequest) returns (BookingResponseSingle);
+    rpc GetBookingPayment (BookingPaymentRequest) returns (BookingPaymentResponse);
 }
 
 message BookingRequest {
@@ -69,6 +70,17 @@ message Booking {
 
 message BookingResponse {
     repeated Booking bookings = 1;
+}
+
+message BookingPaymentRequest {
+    int64 bookingId = 1;
+}
+
+message BookingPaymentResponse {
+    double amount = 1;
+    int64 quantity = 2;
+    string name = 3;
+    string currency = 4;
 }
 
 message BookingResponseSingle {

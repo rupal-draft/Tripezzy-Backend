@@ -1,6 +1,7 @@
 package com.tripezzy.booking_service.service.implementation;
 
 import com.tripezzy.booking_service.dto.BookingDto;
+import com.tripezzy.booking_service.dto.BookingPaymentDto;
 import com.tripezzy.booking_service.entity.Booking;
 import com.tripezzy.booking_service.entity.enums.Status;
 import com.tripezzy.booking_service.exception.ResourceNotFound;
@@ -196,5 +197,18 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.save(booking);
 
         return modelMapper.map(booking,BookingDto.class);
+    }
+
+    @Override
+    public BookingPaymentDto getBookingPayment(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFound("Booking not found"));
+
+        BookingPaymentDto bookingPaymentDto = new BookingPaymentDto();
+        bookingPaymentDto.setAmount(booking.getTotalPrice());
+        bookingPaymentDto.setName(booking.getFirstName()+ " " + booking.getLastName());
+        bookingPaymentDto.setCurrency("USD");
+
+        return bookingPaymentDto;
     }
 }

@@ -1,5 +1,6 @@
 package com.tripezzy.payment_service.entity;
 
+import com.tripezzy.payment_service.entity.enums.PaymentCategory;
 import com.tripezzy.payment_service.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
 
@@ -18,8 +19,8 @@ public class Payment {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
+    @Column(name = "reference", nullable = false)
+    private Long referenceId ;
 
     @Column(name = "session_id", nullable = false, unique = true)
     private String sessionId;
@@ -37,11 +38,15 @@ public class Payment {
     @Column(name = "currency", nullable = false)
     private String currency;
 
-    @Column(name = "product_name", nullable = false)
-    private String productName;
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "category", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentCategory category;
 
     @Column(name = "quantity", nullable = false)
-    private Long quantity;
+    private Long quantity = 1L;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -73,14 +78,6 @@ public class Payment {
 
     public void setUserId(Long userId) {
         this.userId = userId;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Long productId) {
-        this.productId = productId;
     }
 
     public String getSessionId() {
@@ -123,14 +120,6 @@ public class Payment {
         this.currency = currency;
     }
 
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
     public Long getQuantity() {
         return quantity;
     }
@@ -153,5 +142,29 @@ public class Payment {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Long getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(Long referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public PaymentCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(PaymentCategory category) {
+        this.category = category;
     }
 }

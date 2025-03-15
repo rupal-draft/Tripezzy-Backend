@@ -2,6 +2,7 @@ package com.tripezzy.eCommerce_service.services.implementations;
 
 import com.tripezzy.eCommerce_service.dto.CartDto;
 import com.tripezzy.eCommerce_service.dto.CartItemDto;
+import com.tripezzy.eCommerce_service.dto.CartPaymentDto;
 import com.tripezzy.eCommerce_service.entity.Cart;
 import com.tripezzy.eCommerce_service.entity.CartItem;
 import com.tripezzy.eCommerce_service.entity.Product;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -122,5 +124,29 @@ public class CartServiceImpl implements CartService {
 
         log.info("Total cost calculated successfully for user ID: {}", userId);
         return totalCost;
+    }
+
+    @Override
+    public CartPaymentDto getPaymentDetails(Long cartId) {
+        log.info("Fetching cart for payment for user ID: {}", cartId);
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFound("Cart not found for user ID: " + cartId));
+
+        CartPaymentDto cartPaymentDto = new CartPaymentDto();
+        cartPaymentDto.setQuantity(cart
+                .getItems()
+                .stream()
+                .mapToLong(CartItem::getQuantity)
+                .sum());
+        cartPaymentDto.setAmount(cart.getTotalAmount());
+        cartPaymentDto.setName(
+                cart.getItems()
+                        .stream()
+                        .map(cartItem -> cartItem.getProduct().getName())
+                        .collect(Collectors.joining(" + "))
+        );
+        cartPaymentDto.setCurrency("USD");
+
+        return cartPaymentDto;
     }
 }

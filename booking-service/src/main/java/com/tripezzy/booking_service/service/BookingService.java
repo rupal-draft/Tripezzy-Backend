@@ -1,6 +1,7 @@
 package com.tripezzy.booking_service.service;
 
 import com.tripezzy.booking_service.dto.BookingDto;
+import com.tripezzy.booking_service.dto.BookingPaymentDto;
 import com.tripezzy.booking_service.entity.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,5 +44,7 @@ public interface BookingService {
     Page<BookingDto> filterBookings(Long userId, Long destinationId, Status status, String paymentStatus, BigDecimal minPrice, BigDecimal maxPrice, LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     BookingDto confirmBooking(Long bookingId);
+
+    BookingPaymentDto getBookingPayment(Long bookingId);
 
 }

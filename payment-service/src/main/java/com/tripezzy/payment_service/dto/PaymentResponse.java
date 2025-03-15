@@ -7,7 +7,7 @@ public class PaymentResponse {
     private String message;
     private String sessionId;
     private String sessionUrl;
-    private Long amount;
+    private double amount;
     private Long quantity;
     private String productName;
     private String currency;
@@ -27,7 +27,7 @@ public class PaymentResponse {
         return sessionUrl;
     }
 
-    public Long getAmount() {
+    public double getAmount() {
         return amount;
     }
 
@@ -59,12 +59,12 @@ public class PaymentResponse {
         private String message;
         private String sessionId;
         private String sessionUrl;
-        private Long amount;
+        private double amount;
         private Long quantity;
         private String productName;
         private String currency;
 
-        public PaymentResponseBuilder amount(Long amount) {
+        public PaymentResponseBuilder amount(double amount) {
             this.amount = amount;
             return this;
         }
