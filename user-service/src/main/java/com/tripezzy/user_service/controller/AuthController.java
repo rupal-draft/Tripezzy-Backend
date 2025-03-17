@@ -51,10 +51,23 @@ public class AuthController {
         return new ResponseEntity<>(guide, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<String> rateLimitFallback(Object request, Throwable throwable) {
+    public ResponseEntity<String> rateLimitFallbackSignup(UserRegisterDto signupDto, Throwable throwable) {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                .body("Too many requests. Please try again later.");
+                .body("Too many signup attempts. Please try again later.");
     }
 
+    public ResponseEntity<String> rateLimitFallbackLogin(UserLoginDto loginDto, Throwable throwable) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body("Too many login attempts. Please try again later.");
+    }
 
+    public ResponseEntity<String> rateLimitFallbackSeller(OnboardSellerDto onboardSellerDto, Throwable throwable) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body("Too many seller onboard requests. Please try again later.");
+    }
+
+    public ResponseEntity<String> rateLimitFallbackGuide(OnboardGuideDto onboardGuideDto, Throwable throwable) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body("Too many guide onboard requests. Please try again later.");
+    }
 }
