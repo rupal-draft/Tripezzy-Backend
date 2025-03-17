@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DestinationServiceImpl implements DestinationService {
@@ -54,7 +55,7 @@ public class DestinationServiceImpl implements DestinationService {
     @Override
     @Cacheable(value = "destinations",key = "#pageable")
     public Page<DestinationDto> getAllDestinations(Pageable pageable) {
-        log.info("Fetching all destinations");
+        log.info("Fetching all destinations: {}", pageable);
         Page<Destination> destinations = destinationRepository.findByDeletedFalse(pageable);
 
         if (destinations.isEmpty()) {
@@ -92,29 +93,28 @@ public class DestinationServiceImpl implements DestinationService {
 
     @Override
     @CacheEvict(value = "destination", key = "#id")
-    public void deleteDestination(Long id) {
-        log.info("Deleting Destination ID: {}", id);
-        destinationRepository.findById(id)
-                .filter(dest -> !dest.isDeleted())
-                .orElseThrow(() -> new ResourceNotFound("Destination not found or deleted"));
-
-        destinationRepository.deleteById(id);
-    }
-
-    @Override
-    @CacheEvict(value = "destination", key = "#id")
+    @Transactional
     public void softDeleteDestination(Long id) {
         log.info("Soft deleting Destination ID: {}", id);
-        Destination destination = destinationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFound("Destination not found"));
 
+        Optional<Destination> destinationOptional = destinationRepository.findById(id);
+
+        if (destinationOptional.isEmpty()) {
+            throw new ResourceNotFound("Destination not found");
+        }
+
+        Destination destination = destinationOptional.get();
+        log.info("Destination {} found", destination);
         if (destination.isDeleted()) {
             throw new IllegalState("Destination is already deleted");
         }
 
         destination.setDeleted(true);
         destinationRepository.save(destination);
+
+        log.info("Destination ID {} marked as deleted", id);
     }
+
 
     @Override
     @Cacheable(value = "searchDestinations", key = "#keyword")
@@ -134,13 +134,13 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
-    @Cacheable(value = "filteredDestinations", key = "#country, #category, #minPrice, #maxPrice")
-    public List<DestinationDto> filterDestinations(String country, String category, Double minPrice, Double maxPrice) {
-        log.info("Filtering destinations with country: {}, category: {}, minPrice: {}, maxPrice: {}",
-                country, category, minPrice, maxPrice);
+    @Cacheable(value = "filteredDestinations", key = "#country")
+    public List<DestinationDto> filterDestinations(String country) {
+        log.info("Filtering destinations with country: {}",
+                country);
 
         List<Destination> destinations = destinationRepository.findAll(
-                DestinationSpecification.filterBy(country, category, minPrice, maxPrice));
+                DestinationSpecification.filterBy(country));
 
         if (destinations.isEmpty()) {
             log.warn("No destinations found for the applied filters.");

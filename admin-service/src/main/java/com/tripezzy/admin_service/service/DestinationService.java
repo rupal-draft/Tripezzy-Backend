@@ -16,11 +16,9 @@ public interface DestinationService {
 
     DestinationDto updateDestination(Long id, @Valid DestinationDto dto);
 
-    void deleteDestination(Long id);
-
     void softDeleteDestination(Long id);
 
     List<DestinationDto> searchDestinations(String keyword);
 
-    List<DestinationDto> filterDestinations(String country, String category, Double minPrice, Double maxPrice);
+    List<DestinationDto> filterDestinations(String country);
 }
