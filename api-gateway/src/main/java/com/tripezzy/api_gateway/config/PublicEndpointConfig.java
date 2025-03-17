@@ -8,14 +8,14 @@ import java.util.Set;
 public class PublicEndpointConfig {
 
     private final Set<String> publicEndpoints = Set.of(
-            "/api/v1/users/auth/login",
-            "/api/v1/users/auth/register",
-            "/api/v1/admin/tours/public",
-            "/api/v1/admin/destinations/public",
-            "/api/v1/bookings/core/public",
-            "/api/v1/shop/products/public",
-            "/api/v1/blogs/core/public",
-            "/api/v1/payments/core/public"
+            "/users/auth/login",
+            "/users/auth/register",
+            "/admin/tours/public",
+            "/admin/destinations/public",
+            "/bookings/core/public",
+            "/shop/products/public",
+            "/blogs/core/public",
+            "/payments/core/public"
     );
 
     public boolean isPublicEndpoint(String path) {

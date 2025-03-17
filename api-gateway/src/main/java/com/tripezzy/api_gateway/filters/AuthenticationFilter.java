@@ -39,7 +39,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     .getRequest()
                     .getURI()
                     .getPath();
-
+            log.info("Request path: {}", path);
             if (publicEndpointConfig.isPublicEndpoint(path)) {
                 log.info("Skipping authentication for public endpoint: {}", path);
                 return chain.filter(exchange);

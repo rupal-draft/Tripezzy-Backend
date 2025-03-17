@@ -30,9 +30,9 @@ public class AuthController {
 
     @PostMapping(path = "/login")
     @RateLimiter(name = "loginLimiter", fallbackMethod = "rateLimitFallback")
-    public ResponseEntity<String> login(@RequestBody UserLoginDto loginDto){
-        String token = authService.login(loginDto);
-        return ResponseEntity.ok(token);
+    public ResponseEntity<UserLoginResponseDto> login(@RequestBody UserLoginDto loginDto){
+        UserLoginResponseDto loginResponse = authService.login(loginDto);
+        return ResponseEntity.ok(loginResponse);
     }
 
     @PostMapping(path = "/onboard/seller")
@@ -51,8 +51,10 @@ public class AuthController {
         return new ResponseEntity<>(guide, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<String> rateLimitFallback() {
+    public ResponseEntity<String> rateLimitFallback(Object request, Throwable throwable) {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                 .body("Too many requests. Please try again later.");
     }
+
+
 }

@@ -54,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String login(UserLoginDto loginDto) {
+    public UserLoginResponseDto login(UserLoginDto loginDto) {
         log.info("Processing login for email: {}", loginDto.getEmail());
 
         User user = userRepository.findByEmail(loginDto.getEmail())
@@ -71,7 +71,11 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtService.getAccessJwtToken(user);
         log.info("User successfully logged in with ID: {}", user.getId());
 
-        return token;
+        UserLoginResponseDto userLoginResponseDto = new UserLoginResponseDto();
+        userLoginResponseDto.setAccessToken(token);
+        userLoginResponseDto.setUserId(user.getId());
+
+        return userLoginResponseDto;
     }
 
     @Override
@@ -118,9 +122,20 @@ public class AuthServiceImpl implements AuthService {
 
     private <T> User createUserWithProfile(T profileDto, UserRole role) {
         User user = modelMapper.map(profileDto, User.class);
-        user.setPassword(PasswordUtil.hashPassword(((OnboardSellerDto) profileDto).getPassword()));
         user.setRole(role);
-        user.setPhoneNumber(((OnboardSellerDto) profileDto).getPhoneNumber());
+
+        if (profileDto instanceof OnboardSellerDto) {
+            OnboardSellerDto sellerDto = (OnboardSellerDto) profileDto;
+            user.setPassword(PasswordUtil.hashPassword(sellerDto.getPassword()));
+            user.setPhoneNumber(sellerDto.getPhoneNumber());
+        } else if (profileDto instanceof OnboardGuideDto) {
+            OnboardGuideDto guideDto = (OnboardGuideDto) profileDto;
+            user.setPassword(PasswordUtil.hashPassword(guideDto.getPassword()));
+            user.setPhoneNumber(guideDto.getPhoneNumber());
+        } else {
+            throw new IllegalArgumentException("Invalid profile type: " + profileDto.getClass().getSimpleName());
+        }
         return user;
     }
+
 }

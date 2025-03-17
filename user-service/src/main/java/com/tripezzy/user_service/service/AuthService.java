@@ -5,7 +5,7 @@ import com.tripezzy.user_service.dto.*;
 public interface AuthService {
     UserDto signup(UserRegisterDto signupDto);
 
-    String login(UserLoginDto loginDto);
+    UserLoginResponseDto login(UserLoginDto loginDto);
 
     UserDto onboardSeller(OnboardSellerDto onboardSellerDto);
 
