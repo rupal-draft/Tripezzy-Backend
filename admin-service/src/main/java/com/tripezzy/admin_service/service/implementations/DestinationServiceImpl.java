@@ -35,7 +35,7 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
-    @CacheEvict(value = "destinations", allEntries = true)
+    @CacheEvict(value = "destination", allEntries = true)
     @Transactional
     public DestinationDto createDestination(DestinationDto dto) {
         log.info("Creating new Destination: {}", dto.getName());

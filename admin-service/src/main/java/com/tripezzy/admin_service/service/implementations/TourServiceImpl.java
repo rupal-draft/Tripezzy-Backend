@@ -1,10 +1,11 @@
 package com.tripezzy.admin_service.service.implementations;
 
 import com.tripezzy.admin_service.dto.TourDto;
+import com.tripezzy.admin_service.entity.Destination;
 import com.tripezzy.admin_service.entity.TourPackage;
-import com.tripezzy.admin_service.exceptions.DataIntegrityViolation;
 import com.tripezzy.admin_service.exceptions.IllegalState;
 import com.tripezzy.admin_service.exceptions.ResourceNotFound;
+import com.tripezzy.admin_service.repository.DestinationRepository;
 import com.tripezzy.admin_service.repository.TourRepository;
 import com.tripezzy.admin_service.repository.specifications.TourSpecification;
 import com.tripezzy.admin_service.service.TourService;
@@ -29,30 +30,39 @@ public class TourServiceImpl implements TourService {
 
     private static final Logger log = LoggerFactory.getLogger(TourServiceImpl.class);
     private final TourRepository tourRepository;
+    private final DestinationRepository destinationRepository;
     private final ModelMapper modelMapper;
 
-    public TourServiceImpl(TourRepository tourRepository, ModelMapper modelMapper) {
+    public TourServiceImpl(TourRepository tourRepository, ModelMapper modelMapper, DestinationRepository destinationRepository) {
         this.tourRepository = tourRepository;
         this.modelMapper = modelMapper;
+        this.destinationRepository = destinationRepository;
     }
 
     @Override
-    @CacheEvict(value = "destination", key = "#id")
+    @CacheEvict(value = "destination", allEntries = true)
     @Transactional
     public TourDto createTour(TourDto dto) {
         log.info("Creating new Tour: {}", dto.getName());
-        try {
-            if (dto.getName() == null || dto.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
-                throw new IllegalState("Invalid tour data: Name and price must be valid");
-            }
 
-            TourPackage tour = modelMapper.map(dto, TourPackage.class);
-            return modelMapper.map(tourRepository.save(tour), TourDto.class);
-        } catch (DataIntegrityViolation ex) {
-            log.error("Database error while creating tour", ex);
-            throw new DataIntegrityViolation("Tour creation failed due to database constraints");
+        if (dto.getName() == null || dto.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalState("Invalid tour data: Name and price must be valid");
         }
+
+        Destination destination = destinationRepository.findById(dto.getDestinationId())
+                .orElseThrow(() -> new ResourceNotFound("Destination not found with ID: " + dto.getDestinationId()));
+
+        TourPackage newTour = modelMapper.map(dto, TourPackage.class);
+        newTour.setId(null);
+        newTour.setDestination(destination);
+
+        destination.getTourPackages().add(newTour);
+
+        destinationRepository.save(destination);
+
+        return modelMapper.map(newTour, TourDto.class);
     }
+
 
     @Override
     @Cacheable(value = "tours", key = "#pageable")
@@ -180,5 +190,4 @@ public class TourServiceImpl implements TourService {
                 .map(tour -> modelMapper.map(tour, TourDto.class))
                 .toList();
     }
-
 }
