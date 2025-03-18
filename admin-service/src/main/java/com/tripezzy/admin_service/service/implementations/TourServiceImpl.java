@@ -114,20 +114,13 @@ public class TourServiceImpl implements TourService {
         if (dto.getPrice() != null && dto.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalState("Price must be greater than zero");
         }
+        try {
+            modelMapper.map(dto, tour);
+        } catch (ClassCastException e){
+            throw new ClassCastException("Invalid tour data: " + e.getLocalizedMessage());
+        }
 
-        modelMapper.map(dto, tour);
         return modelMapper.map(tourRepository.save(tour), TourDto.class);
-    }
-
-    @Override
-    @CacheEvict(value = "tour", key = "#id")
-    public void deleteTour(Long id) {
-        log.info("Deleting Tour ID: {}", id);
-        tourRepository.findById(id)
-                .filter(t -> !t.isDeleted())
-                .orElseThrow(() -> new ResourceNotFound("Tour not found or deleted"));
-
-        tourRepository.deleteById(id);
     }
 
     @Override
@@ -146,7 +139,7 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
-    @Cacheable(value = "tours", key = "#keyword")
+    @Cacheable(value = "tours", key = "#keyword != null ? #keyword : 'default'")
     public List<TourDto> searchTours(String keyword) {
         log.info("Searching for tours with keyword: {}", keyword);
 
@@ -169,15 +162,15 @@ public class TourServiceImpl implements TourService {
 
     @Override
     @Cacheable(value = "filteredTours", key = "{#destinationId, #minPrice, #maxPrice, #category, #status}")
-    public List<TourDto> filterTours(Long destinationId, Double minPrice, Double maxPrice, String category, String status) {
+    public List<TourDto> filterTours(Long destinationId, Double minPrice, Double maxPrice, Integer capacity) {
         log.info("Filtering tours with params - Destination ID: {}, Min Price: {}, Max Price: {}, Category: {}, Status: {}",
-                destinationId, minPrice, maxPrice, category, status);
+                destinationId, minPrice, maxPrice, capacity);
 
         if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
             throw new IllegalArgumentException("Minimum price cannot be greater than maximum price");
         }
 
-        List<TourPackage> tours = tourRepository.findAll(TourSpecification.filterBy(destinationId, category, minPrice, maxPrice, status));
+        List<TourPackage> tours = tourRepository.findAll(TourSpecification.filterBy(destinationId, capacity, minPrice, maxPrice));
 
         if (tours.isEmpty()) {
             log.warn("No tours found matching the given filters");

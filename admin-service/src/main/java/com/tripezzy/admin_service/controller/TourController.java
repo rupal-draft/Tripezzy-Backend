@@ -1,5 +1,7 @@
 package com.tripezzy.admin_service.controller;
 
+import com.tripezzy.admin_service.advices.ApiError;
+import com.tripezzy.admin_service.advices.ApiResponse;
 import com.tripezzy.admin_service.annotations.RoleRequired;
 import com.tripezzy.admin_service.dto.TourDto;
 import com.tripezzy.admin_service.service.TourService;
@@ -26,71 +28,100 @@ public class TourController {
     }
 
     @PostMapping
-    @RateLimiter(name = "createTourRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RateLimiter(name = "createTourRateLimiter", fallbackMethod = "createTourRateLimitFallback")
     @RoleRequired("ADMIN")
     public ResponseEntity<TourDto> createTour(@Valid @RequestBody TourDto dto) {
         return ResponseEntity.ok(tourService.createTour(dto));
     }
 
-    @GetMapping
-    @RateLimiter(name = "getAllToursRateLimiter", fallbackMethod = "rateLimitFallback")
+    @GetMapping("/public")
+    @RateLimiter(name = "getAllToursRateLimiter", fallbackMethod = "getAllToursRateLimitFallback")
     public ResponseEntity<Page<TourDto>> getAllTours(Pageable pageable) {
         return ResponseEntity.ok(tourService.getAllTours(pageable));
     }
 
-    @GetMapping("/{id}")
-    @RateLimiter(name = "getTourByIdRateLimiter", fallbackMethod = "rateLimitFallback")
+    @GetMapping("/public/{id}")
+    @RateLimiter(name = "getTourByIdRateLimiter", fallbackMethod = "getTourByIdRateLimitFallback")
     public ResponseEntity<TourDto> getTourById(@PathVariable Long id) {
         return ResponseEntity.ok(tourService.getTourById(id));
     }
 
-    @GetMapping("/destination/{destinationId}")
-    @RateLimiter(name = "getToursByDestinationRateLimiter", fallbackMethod = "rateLimitFallback")
+    @GetMapping("/public/destination/{destinationId}")
+    @RateLimiter(name = "getToursByDestinationRateLimiter", fallbackMethod = "getToursByDestinationRateLimitFallback")
     public ResponseEntity<List<TourDto>> getToursByDestination(@PathVariable Long destinationId) {
         return ResponseEntity.ok(tourService.getToursByDestination(destinationId));
     }
 
     @PutMapping("/{id}")
-    @RateLimiter(name = "updateTourRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RateLimiter(name = "updateTourRateLimiter", fallbackMethod = "updateTourRateLimitFallback")
     @RoleRequired("ADMIN")
     public ResponseEntity<TourDto> updateTour(@PathVariable Long id, @Valid @RequestBody TourDto dto) {
         return ResponseEntity.ok(tourService.updateTour(id, dto));
     }
 
-    @DeleteMapping("/{id}")
-    @RateLimiter(name = "deleteTourRateLimiter", fallbackMethod = "rateLimitFallback")
-    @RoleRequired("ADMIN")
-    public ResponseEntity<String> deleteTour(@PathVariable Long id) {
-        tourService.deleteTour(id);
-        return ResponseEntity.ok("Tour deleted successfully.");
-    }
-
     @DeleteMapping("/soft-delete/{id}")
-    @RateLimiter(name = "softDeleteTourRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RateLimiter(name = "softDeleteTourRateLimiter", fallbackMethod = "softDeleteTourRateLimitFallback")
     @RoleRequired("ADMIN")
-    public ResponseEntity<String> softDeleteTour(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<String>> softDeleteTour(@PathVariable Long id) {
         tourService.softDeleteTour(id);
-        return ResponseEntity.ok("Tour soft deleted successfully.");
+        return ResponseEntity.ok(ApiResponse.success("Tour deleted successfully"));
     }
 
-    @GetMapping("/search")
-    @RateLimiter(name = "searchToursRateLimiter", fallbackMethod = "rateLimitFallback")
+    @GetMapping("/public/search")
+    @RateLimiter(name = "searchToursRateLimiter", fallbackMethod = "searchToursRateLimitFallback")
     public ResponseEntity<List<TourDto>> searchTours(@RequestParam String keyword) {
         return ResponseEntity.ok(tourService.searchTours(keyword));
     }
 
-    @GetMapping("/filter")
-    @RateLimiter(name = "filterToursRateLimiter", fallbackMethod = "rateLimitFallback")
+    @GetMapping("/public/filter")
+    @RateLimiter(name = "filterToursRateLimiter", fallbackMethod = "filterToursRateLimitFallback")
     public ResponseEntity<List<TourDto>> filterTours(
             @RequestParam(required = false) Long destinationId,
             @RequestParam(required = false) Double minPrice,
                                                      @RequestParam(required = false) Double maxPrice,
-                                                     @RequestParam(required = false) String category,@RequestParam(required = false) String status) {
-        return ResponseEntity.ok(tourService.filterTours(destinationId,minPrice, maxPrice, category,status));
+                                                     @RequestParam(required = false) Integer capacity) {
+        return ResponseEntity.ok(tourService.filterTours(destinationId,minPrice, maxPrice, capacity));
     }
 
-    public ResponseEntity<String> rateLimitFallback() {
+    private ResponseEntity<ApiResponse<String>> rateLimitFallback(String serviceName, Throwable throwable) {
+        ApiError apiError = new ApiError
+                .ApiErrorBuilder()
+                .setMessage("Too many requests to " + serviceName + ". Please try again later.")
+                .setStatus(HttpStatus.TOO_MANY_REQUESTS).build();
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                .body("Too many requests. Please try again later.");
+                .body(ApiResponse.error(apiError));
     }
+
+    public ResponseEntity<ApiResponse<String>> createTourRateLimitFallback(TourDto dto, Throwable throwable) {
+        return rateLimitFallback("createTour", throwable);
+    }
+
+    public ResponseEntity<ApiResponse<String>> getAllToursRateLimitFallback(Pageable pageable, Throwable throwable) {
+        return rateLimitFallback("getAllTours", throwable);
+    }
+
+    public ResponseEntity<ApiResponse<String>> getTourByIdRateLimitFallback(Long id, Throwable throwable) {
+        return rateLimitFallback("getTourById", throwable);
+    }
+
+    public ResponseEntity<ApiResponse<String>> getToursByDestinationRateLimitFallback(Long destinationId, Throwable throwable) {
+        return rateLimitFallback("getToursByDestination", throwable);
+    }
+
+    public ResponseEntity<ApiResponse<String>> updateTourRateLimitFallback(Long id, TourDto dto, Throwable throwable) {
+        return rateLimitFallback("updateTour", throwable);
+    }
+
+    public ResponseEntity<ApiResponse<String>> softDeleteTourRateLimitFallback(Long id, Throwable throwable) {
+        return rateLimitFallback("softDeleteTour", throwable);
+    }
+
+    public ResponseEntity<ApiResponse<String>> searchToursRateLimitFallback(String keyword, Throwable throwable) {
+        return rateLimitFallback("searchTours", throwable);
+    }
+
+    public ResponseEntity<ApiResponse<String>> filterToursRateLimitFallback(Long destinationId, Double minPrice, Double maxPrice, Integer capacity, Throwable throwable) {
+        return rateLimitFallback("filterTours", throwable);
+    }
+
 }

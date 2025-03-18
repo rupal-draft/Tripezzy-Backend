@@ -110,6 +110,4 @@ public class DestinationController {
     public ResponseEntity<ApiResponse<String>> filterDestinationsRateLimitFallbackForFilter(String country, Throwable throwable) {
         return rateLimitFallback("filterDestinations", throwable);
     }
-
-
 }

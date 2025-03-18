@@ -18,11 +18,9 @@ public interface TourService {
 
     TourDto updateTour(Long id, @Valid TourDto dto);
 
-    void deleteTour(Long id);
-
     void softDeleteTour(Long id);
 
     List<TourDto> searchTours(String keyword);
 
-    List<TourDto> filterTours(Long destinationId, Double minPrice, Double maxPrice, String category, String status);
+    List<TourDto> filterTours(Long destinationId, Double minPrice, Double maxPrice, Integer capacity);
 }

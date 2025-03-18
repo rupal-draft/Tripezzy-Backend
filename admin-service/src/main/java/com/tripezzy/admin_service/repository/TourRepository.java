@@ -19,7 +19,7 @@ public interface TourRepository extends JpaRepository<TourPackage, Long> , JpaSp
     @Cacheable(value = "activeTours")
     Page<TourPackage> findByDeletedFalse(Pageable pageable);
 
-    @Cacheable(value = "tours", key = "#keyword")
+    @Cacheable(value = "tours", key = "#keyword != null ? #keyword : 'default'")
     List<TourPackage> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description);
 
     @Cacheable(value = "toursByDestination", key = "#destinationId")
