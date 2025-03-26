@@ -43,15 +43,6 @@ public class BookingGrpcService extends BookingServiceGrpc.BookingServiceImplBas
         sendBookingResponse(bookingPage, responseObserver);
     }
 
-    @Override
-    public void getBookingsByTravelDateRange(DateRangeRequest request, StreamObserver<BookingResponse> responseObserver) {
-        Page<BookingDto> bookingPage = bookingService.getBookingsByTravelDateRange(
-                java.time.LocalDate.parse(request.getStartDate()),
-                java.time.LocalDate.parse(request.getEndDate()),
-                PageRequest.of(request.getPage(), request.getSize()));
-
-        sendBookingResponse(bookingPage, responseObserver);
-    }
 
     @Override
     public void softDeleteBooking(DeleteBookingRequest request, StreamObserver<DeleteBookingResponse> responseObserver) {
@@ -111,13 +102,13 @@ public class BookingGrpcService extends BookingServiceGrpc.BookingServiceImplBas
     private void sendBookingResponse(Page<BookingDto> bookingPage, StreamObserver<BookingResponse> responseObserver) {
         List<Booking> grpcBookings = bookingPage.getContent().stream().map(bookingDto ->
                 Booking.newBuilder()
-                        .setBookingId(bookingDto.getBookingId())
+                        .setBookingId(bookingDto.getId())
                         .setFirstName(bookingDto.getFirstName())
                         .setLastName(bookingDto.getLastName())
                         .setEmail(bookingDto.getEmail())
                         .setPhoneNumber(bookingDto.getPhoneNumber())
-                        .setUserId(bookingDto.getUserId())
-                        .setDestinationId(bookingDto.getDestinationId())
+                        .setUserId(bookingDto.getUser())
+                        .setDestinationId(bookingDto.getDestination())
                         .setTravelDate(bookingDto.getTravelDate().toString())
                         .setTotalPrice(bookingDto.getTotalPrice().doubleValue())
                         .build()
@@ -133,13 +124,13 @@ public class BookingGrpcService extends BookingServiceGrpc.BookingServiceImplBas
 
     private Booking convertToGrpcBooking(BookingDto dto) {
         return Booking.newBuilder()
-                .setBookingId(dto.getBookingId())
+                .setBookingId(dto.getId())
                 .setFirstName(dto.getFirstName())
                 .setLastName(dto.getLastName())
                 .setEmail(dto.getEmail())
                 .setPhoneNumber(dto.getPhoneNumber())
-                .setUserId(dto.getUserId())
-                .setDestinationId(dto.getDestinationId())
+                .setUserId(dto.getUser())
+                .setDestinationId(dto.getDestination())
                 .setTravelDate(dto.getTravelDate().toString())
                 .setTotalPrice(dto.getTotalPrice().doubleValue())
                 .build();

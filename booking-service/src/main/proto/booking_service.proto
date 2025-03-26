@@ -9,7 +9,6 @@ service BookingService {
     rpc GetAllBookings (BookingRequest) returns (BookingResponse);
     rpc GetBookingsByUserId (UserBookingsRequest) returns (BookingResponse);
     rpc GetBookingsByDestinationId (DestinationBookingsRequest) returns (BookingResponse);
-    rpc GetBookingsByTravelDateRange (DateRangeRequest) returns (BookingResponse);
     rpc SoftDeleteBooking (DeleteBookingRequest) returns (DeleteBookingResponse);
     rpc GetBookingsByPaymentStatus (PaymentStatusRequest) returns (BookingResponse);
     rpc ConfirmBooking (ConfirmBookingRequest) returns (BookingResponseSingle);
@@ -31,13 +30,6 @@ message DestinationBookingsRequest {
     int64 destinationId = 1;
     int32 page = 2;
     int32 size = 3;
-}
-
-message DateRangeRequest {
-    string startDate = 1;
-    string endDate = 2;
-    int32 page = 3;
-    int32 size = 4;
 }
 
 message DeleteBookingRequest {

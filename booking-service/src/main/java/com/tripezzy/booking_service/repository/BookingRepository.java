@@ -1,6 +1,7 @@
 package com.tripezzy.booking_service.repository;
 
 import com.tripezzy.booking_service.entity.Booking;
+import com.tripezzy.booking_service.entity.enums.PaymentStatus;
 import com.tripezzy.booking_service.entity.enums.Status;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -19,20 +20,17 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> , JpaSpecificationExecutor<Booking> {
 
-    @Cacheable("bookingsByUserId") // Cache frequently accessed data
-    Page<Booking> findByUserId(Long userId, Pageable pageable);
+    @Cacheable("bookingsByUserId")
+    Page<Booking> findByUser(Long userId, Pageable pageable);
 
     @Cacheable("bookingsByDestinationId")
-    Page<Booking> findByDestinationId(Long destinationId, Pageable pageable);
+    Page<Booking> findByDestination(Long destinationId, Pageable pageable);
 
     @Cacheable("bookingsByStatus")
     Page<Booking> findByStatus(Status status, Pageable pageable);
 
-    @Cacheable("bookingsByTravelDateRange")
-    Page<Booking> findByTravelDateBetween(LocalDate startDate, LocalDate endDate, Pageable pageable);
-
     @Cacheable("bookingsByPaymentStatus")
-    List<Booking> findByPaymentStatus(String paymentStatus);
+    List<Booking> findByPaymentStatus(PaymentStatus paymentStatus);
 
     @Query("SELECT COUNT(b) FROM Booking b WHERE b.status = :status AND b.deleted = false")
     long countByStatus(@Param("status") Status status);
@@ -42,7 +40,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> , JpaSpe
 
     @Query("SELECT b FROM Booking b WHERE b.paymentStatus = :paymentStatus AND b.totalPrice BETWEEN :minPrice AND :maxPrice AND b.deleted = false")
     List<Booking> findBookingsByPaymentStatusAndTotalPriceRange(
-            @Param("paymentStatus") String paymentStatus,
+            @Param("paymentStatus") PaymentStatus paymentStatus,
             @Param("minPrice") BigDecimal minPrice,
             @Param("maxPrice") BigDecimal maxPrice
     );

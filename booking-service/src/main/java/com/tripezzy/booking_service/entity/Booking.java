@@ -1,5 +1,6 @@
 package com.tripezzy.booking_service.entity;
 
+import com.tripezzy.booking_service.entity.enums.PaymentStatus;
 import com.tripezzy.booking_service.entity.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -52,11 +53,11 @@ public class Booking {
 
     @Column(name = "user_id")
     @NotNull(message = "User ID cannot be null")
-    private Long userId;
+    private Long user;
 
     @Column(name = "destination_id")
     @NotNull(message = "Destination ID cannot be null")
-    private Long destinationId;
+    private Long destination;
 
     @Column(name = "booking_date", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @NotNull(message = "Booking date cannot be null")
@@ -79,7 +80,8 @@ public class Booking {
 
     @Column(name = "payment_status")
     @NotNull(message = "Payment status cannot be null")
-    private String paymentStatus = "PENDING";
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
@@ -90,19 +92,19 @@ public class Booking {
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted", columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean deleted = false; // Soft deletion flag
+    private boolean deleted = false;
 
     public Booking() {
     }
 
-    public Booking(Long id, String firstName, String lastName, String email, String phoneNumber, Long userId, Long destinationId, LocalDateTime bookingDate, LocalDate travelDate, Status status, BigDecimal totalPrice, String paymentStatus) {
+    public Booking(Long id, String firstName, String lastName, String email, String phoneNumber, Long userId, Long destinationId, LocalDateTime bookingDate, LocalDate travelDate, Status status, BigDecimal totalPrice, PaymentStatus paymentStatus) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.userId = userId;
-        this.destinationId = destinationId;
+        this.user = userId;
+        this.destination = destinationId;
         this.bookingDate = bookingDate;
         this.travelDate = travelDate;
         this.status = status;
@@ -110,7 +112,6 @@ public class Booking {
         this.paymentStatus = paymentStatus;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -151,20 +152,20 @@ public class Booking {
         this.phoneNumber = phoneNumber;
     }
 
-    public Long getUserId() {
-        return userId;
+    public @NotNull(message = "User ID cannot be null") Long getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(@NotNull(message = "User ID cannot be null") Long user) {
+        this.user = user;
     }
 
-    public Long getDestinationId() {
-        return destinationId;
+    public @NotNull(message = "Destination ID cannot be null") Long getDestination() {
+        return destination;
     }
 
-    public void setDestinationId(Long destinationId) {
-        this.destinationId = destinationId;
+    public void setDestination(@NotNull(message = "Destination ID cannot be null") Long destination) {
+        this.destination = destination;
     }
 
     public LocalDateTime getBookingDate() {
@@ -199,11 +200,11 @@ public class Booking {
         this.totalPrice = totalPrice;
     }
 
-    public String getPaymentStatus() {
+    public PaymentStatus getPaymentStatus() {
         return paymentStatus;
     }
 
-    public void setPaymentStatus(String paymentStatus) {
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
 

@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface BookingService {
 
-    BookingDto createBooking(BookingDto bookingDto, Long userId, Long destinationId);
+    BookingDto createBooking(BookingDto bookingDto, Long destinationId);
 
     BookingDto getBookingById(Long bookingId);
 
@@ -24,9 +24,7 @@ public interface BookingService {
 
     Page<BookingDto> getBookingsByDestinationId(Long destinationId, Pageable pageable);
 
-    Page<BookingDto> getBookingsByStatus(Status status, Pageable pageable);
-
-    Page<BookingDto> getBookingsByTravelDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable);
+    Page<BookingDto> getBookingsByStatus(String status, Pageable pageable);
 
     List<BookingDto> getBookingsByPaymentStatusAndPriceRange(String paymentStatus, BigDecimal minPrice, BigDecimal maxPrice);
 

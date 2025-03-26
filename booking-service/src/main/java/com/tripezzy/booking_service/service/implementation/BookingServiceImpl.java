@@ -1,14 +1,17 @@
 package com.tripezzy.booking_service.service.implementation;
 
+import com.tripezzy.booking_service.auth.UserContext;
+import com.tripezzy.booking_service.auth.UserContextHolder;
 import com.tripezzy.booking_service.dto.BookingDto;
 import com.tripezzy.booking_service.dto.BookingPaymentDto;
 import com.tripezzy.booking_service.entity.Booking;
+import com.tripezzy.booking_service.entity.enums.PaymentStatus;
 import com.tripezzy.booking_service.entity.enums.Status;
 import com.tripezzy.booking_service.exception.ResourceNotFound;
 import com.tripezzy.booking_service.repository.BookingRepository;
 import com.tripezzy.booking_service.service.BookingService;
-import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -26,7 +29,8 @@ import java.util.stream.Collectors;
 @Service
 public class BookingServiceImpl implements BookingService {
 
-    private static final Logger log = Logger.getLogger(BookingServiceImpl.class);
+
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(BookingServiceImpl.class);
     private final ModelMapper modelMapper;
     private final BookingRepository bookingRepository;
 
@@ -37,15 +41,20 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto createBooking(BookingDto bookingDto, Long userId, Long destinationId) {
+    public BookingDto createBooking(BookingDto bookingDto, Long destinationId) {
+        UserContext userContext = UserContextHolder.getUserDetails();
+        Long userId = userContext.getUserId();
         log.info("Creating a new booking for user ID: " + userId);
+
         Booking booking = modelMapper.map(bookingDto, Booking.class);
         booking.setBookingDate(LocalDateTime.now());
-        booking.setUserId(userId);
-        booking.setDestinationId(destinationId);
+        booking.setUser(userId);
+        booking.setDestination(destinationId);
         booking.setStatus(Status.PENDING);
+
         Booking savedBooking = bookingRepository.save(booking);
         log.info("Booking created successfully with ID: " + savedBooking.getId());
+
         return modelMapper.map(savedBooking, BookingDto.class);
     }
 
@@ -60,7 +69,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Cacheable(value = "bookings", key = "bookings")
+    @Cacheable(value = "bookings")
     public List<BookingDto> getAllBookings() {
         log.info("Fetching all bookings");
         List<Booking> bookings = bookingRepository.findAll();
@@ -81,7 +90,7 @@ public class BookingServiceImpl implements BookingService {
     @Cacheable(value = "bookingsByUser", key = "#userId")
     public Page<BookingDto> getBookingsByUserId(Long userId, Pageable pageable) {
         log.info("Fetching bookings for user ID: " + userId);
-        return bookingRepository.findByUserId(userId, pageable)
+        return bookingRepository.findByUser(userId, pageable)
                 .map(booking -> modelMapper.map(booking, BookingDto.class));
     }
 
@@ -89,23 +98,16 @@ public class BookingServiceImpl implements BookingService {
     @Cacheable(value = "bookingsByDestination", key = "#destinationId")
     public Page<BookingDto> getBookingsByDestinationId(Long destinationId, Pageable pageable) {
         log.info("Fetching bookings for destination ID: " + destinationId);
-        return bookingRepository.findByDestinationId(destinationId, pageable)
+        return bookingRepository.findByDestination(destinationId, pageable)
                 .map(booking -> modelMapper.map(booking, BookingDto.class));
     }
 
     @Override
     @Cacheable(value = "bookingsByStatus", key = "#status")
-    public Page<BookingDto> getBookingsByStatus(Status status, Pageable pageable) {
+    public Page<BookingDto> getBookingsByStatus(String status, Pageable pageable) {
         log.info("Fetching bookings with status: " + status);
-        return bookingRepository.findByStatus(status, pageable)
-                .map(booking -> modelMapper.map(booking, BookingDto.class));
-    }
-
-    @Override
-    @Cacheable(value = "bookingsByTravelDateRange", key = "#startDate.toString() + '-' + #endDate.toString()")
-    public Page<BookingDto> getBookingsByTravelDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        log.info("Fetching bookings between travel dates: " + startDate + " and " + endDate);
-        return bookingRepository.findByTravelDateBetween(startDate, endDate, pageable)
+        Status bookingStatus = Status.valueOf(status);
+        return bookingRepository.findByStatus(bookingStatus, pageable)
                 .map(booking -> modelMapper.map(booking, BookingDto.class));
     }
 
@@ -113,7 +115,8 @@ public class BookingServiceImpl implements BookingService {
     @Cacheable(value = "bookingsByPaymentStatusAndPriceRange", key = "#paymentStatus + '-' + #minPrice + '-' + #maxPrice")
     public List<BookingDto> getBookingsByPaymentStatusAndPriceRange(String paymentStatus, BigDecimal minPrice, BigDecimal maxPrice) {
         log.info("Fetching bookings with payment status: " + paymentStatus + " and price range: " + minPrice + " to " + maxPrice);
-        return bookingRepository.findBookingsByPaymentStatusAndTotalPriceRange(paymentStatus, minPrice, maxPrice).stream()
+        PaymentStatus paymentStatusEnum = PaymentStatus.valueOf(paymentStatus);
+        return bookingRepository.findBookingsByPaymentStatusAndTotalPriceRange(paymentStatusEnum, minPrice, maxPrice).stream()
                 .map(booking -> modelMapper.map(booking, BookingDto.class))
                 .collect(Collectors.toList());
     }
@@ -162,7 +165,8 @@ public class BookingServiceImpl implements BookingService {
     @Cacheable(value = "bookingsByPaymentStatus", key = "#paymentStatus")
     public List<BookingDto> getBookingsByPaymentStatus(String paymentStatus) {
         log.info("Fetching bookings by payment status: " + paymentStatus);
-        return bookingRepository.findByPaymentStatus(paymentStatus).stream()
+        PaymentStatus paymentStatusEnum = PaymentStatus.valueOf(paymentStatus);
+        return bookingRepository.findByPaymentStatus(paymentStatusEnum).stream()
                 .map(booking -> modelMapper.map(booking, BookingDto.class))
                 .collect(Collectors.toList());
     }

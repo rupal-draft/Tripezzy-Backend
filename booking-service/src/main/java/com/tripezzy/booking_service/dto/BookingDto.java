@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public class BookingDto {
 
-    private Long bookingId;
+    private Long id;
 
     @NotNull(message = "First name cannot be null")
     @Size(min = 1, max = 50, message = "First name must be between 1 and 50 characters")
@@ -29,10 +29,10 @@ public class BookingDto {
     private String phoneNumber;
 
     @NotNull(message = "User ID cannot be null")
-    private Long userId;
+    private Long user;
 
     @NotNull(message = "Destination ID cannot be null")
-    private Long destinationId;
+    private Long destination;
 
     @NotNull(message = "Travel date cannot be null")
     @FutureOrPresent(message = "Travel date must be in the present or future")
@@ -47,27 +47,20 @@ public class BookingDto {
     }
 
     public BookingDto(Long bookingId, String firstName, String lastName, String email, String phoneNumber, Long userId, Long destinationId, LocalDate travelDate, BigDecimal totalPrice) {
-        this.bookingId = bookingId;
+        this.id = bookingId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.userId = userId;
-        this.destinationId = destinationId;
+        this.user = userId;
+        this.destination = destinationId;
         this.travelDate = travelDate;
         this.totalPrice = totalPrice;
     }
 
     // Getters and Setters
-    public Long getBookingId() {
-        return bookingId;
-    }
 
-    public void setBookingId(Long bookingId) {
-        this.bookingId = bookingId;
-    }
-
-    public String getFirstName() {
+    public @NotNull(message = "First name cannot be null") @Size(min = 1, max = 50, message = "First name must be between 1 and 50 characters") @Pattern(regexp = "^[a-zA-Z\\s'-]+$", message = "First name can only contain letters, spaces, hyphens, and apostrophes") String getFirstName() {
         return firstName;
     }
 
@@ -99,20 +92,28 @@ public class BookingDto {
         this.phoneNumber = phoneNumber;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getId() {
+        return id;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Long getDestinationId() {
-        return destinationId;
+    public @NotNull(message = "User ID cannot be null") Long getUser() {
+        return user;
     }
 
-    public void setDestinationId(Long destinationId) {
-        this.destinationId = destinationId;
+    public void setUser(@NotNull(message = "User ID cannot be null") Long user) {
+        this.user = user;
+    }
+
+    public @NotNull(message = "Destination ID cannot be null") Long getDestination() {
+        return destination;
+    }
+
+    public void setDestination(@NotNull(message = "Destination ID cannot be null") Long destination) {
+        this.destination = destination;
     }
 
     public LocalDate getTravelDate() {
@@ -130,6 +131,5 @@ public class BookingDto {
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
-
 
 }
