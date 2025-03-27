@@ -20,7 +20,7 @@ public class Like {
 
     @NotNull(message = "User ID cannot be null")
     @Column(name = "user_id")
-    private Long userId;
+    private Long user;
 
     @NotNull(message = "Blog cannot be null")
     @ManyToOne
@@ -31,9 +31,12 @@ public class Like {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    public Like() {
+    }
+
     public Like(Long id, Long userId, Blog blog, LocalDateTime createdAt) {
         this.id = id;
-        this.userId = userId;
+        this.user = userId;
         this.blog = blog;
         this.createdAt = createdAt;
     }
@@ -47,11 +50,11 @@ public class Like {
     }
 
     public @NotNull(message = "User ID cannot be null") Long getUserId() {
-        return userId;
+        return user;
     }
 
     public void setUserId(@NotNull(message = "User ID cannot be null") Long userId) {
-        this.userId = userId;
+        this.user = userId;
     }
 
     public Blog getBlog() {

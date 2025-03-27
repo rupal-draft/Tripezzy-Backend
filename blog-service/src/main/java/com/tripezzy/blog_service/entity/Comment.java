@@ -43,6 +43,9 @@ public class Comment {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public Comment() {
+    }
+
     public Comment(Long id, String content, Long userId, Blog blog, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.content = content;

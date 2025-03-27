@@ -1,13 +1,15 @@
 package com.tripezzy.blog_service.service.implementation;
 
+import com.tripezzy.blog_service.auth.UserContext;
+import com.tripezzy.blog_service.auth.UserContextHolder;
 import com.tripezzy.blog_service.dto.BlogDto;
 import com.tripezzy.blog_service.dto.BlogResponseDto;
 import com.tripezzy.blog_service.dto.CommentDto;
-import com.tripezzy.blog_service.dto.LikeDto;
 import com.tripezzy.blog_service.entity.Blog;
 import com.tripezzy.blog_service.entity.Comment;
 import com.tripezzy.blog_service.entity.Like;
 import com.tripezzy.blog_service.entity.enums.BlogStatus;
+import com.tripezzy.blog_service.exceptions.IllegalState;
 import com.tripezzy.blog_service.exceptions.ResourceNotFound;
 import com.tripezzy.blog_service.repository.BlogRepository;
 import com.tripezzy.blog_service.repository.CommentRepository;
@@ -23,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,11 +52,15 @@ public class BlogServiceImpl implements BlogService {
     @Transactional
     public BlogResponseDto createBlog(BlogDto blogDto) {
         log.info("Creating a new blog: {}", blogDto.getTitle());
+        UserContext userContext = UserContextHolder.getUserDetails();
+        blogDto.setAuthorId(userContext.getUserId());
         Blog blog = modelMapper.map(blogDto, Blog.class);
+        blog.setId(null);
         Blog savedBlog = blogRepository.save(blog);
         log.info("Blog created successfully with ID: {}", savedBlog.getId());
         return modelMapper.map(savedBlog, BlogResponseDto.class);
     }
+
 
     @Override
     @Cacheable(value = "blog", key = "#blogId")
@@ -83,11 +88,26 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @Cacheable(value = "blogsByStatus", key = "#status + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
-    public Page<BlogResponseDto> getBlogsByStatus(String status, Pageable pageable) {
-        log.info("Fetching blogs by status: {}", status);
-        BlogStatus blogStatus = BlogStatus.valueOf(status.toUpperCase());
-        return blogRepository.findByStatus(blogStatus, pageable)
+    @Cacheable(value = "blogsByTags", key = "#tag + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    public Page<BlogResponseDto> getBlogsByTag(String tag, Pageable pageable) {
+        log.info("Fetching blogs by tag: {}", tag);
+        return blogRepository.findByTag(tag, pageable)
+                .map(blog -> modelMapper.map(blog, BlogResponseDto.class));
+    }
+
+    @Override
+    @Cacheable(value = "blogsByTags", key = "#tag + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    public Page<BlogResponseDto> getBlogsByCategory(String category, Pageable pageable) {
+        log.info("Fetching blogs by category: {}", category);
+        return blogRepository.findByCategory(category, pageable)
+                .map(blog -> modelMapper.map(blog, BlogResponseDto.class));
+    }
+
+    @Override
+    @Cacheable(value = "publishedBlogs", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
+    public Page<BlogResponseDto> getPublishedBlogs(Pageable pageable) {
+        log.info("Fetching published blogs");
+        return blogRepository.findByStatus(BlogStatus.PUBLISHED, pageable)
                 .map(blog -> modelMapper.map(blog, BlogResponseDto.class));
     }
 
@@ -96,13 +116,19 @@ public class BlogServiceImpl implements BlogService {
     @CacheEvict(value = "blog", key = "#blogId")
     public BlogResponseDto updateBlog(Long blogId, BlogDto blogDto) {
         log.info("Updating blog with ID: {}", blogId);
+        UserContext userContext = UserContextHolder.getUserDetails();
+        blogDto.setAuthorId(userContext.getUserId());
         Blog blog = blogRepository.findById(blogId)
                 .orElseThrow(() -> new ResourceNotFound("Blog not found with ID: " + blogId));
+        modelMapper.typeMap(BlogDto.class, Blog.class).addMappings(mapper ->
+                mapper.skip(Blog::setId)
+        );
         modelMapper.map(blogDto, blog);
         Blog updatedBlog = blogRepository.save(blog);
         log.info("Blog updated successfully with ID: {}", blogId);
         return modelMapper.map(updatedBlog, BlogResponseDto.class);
     }
+
 
     @Override
     @Transactional
@@ -117,15 +143,21 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     @Transactional
-    public LikeDto addLikeToBlog(Long blogId, LikeDto likeDto) {
+    public void addLikeToBlog(Long blogId) {
         log.info("Adding like to blog with ID: {}", blogId);
         Blog blog = blogRepository.findById(blogId)
                 .orElseThrow(() -> new ResourceNotFound("Blog not found with ID: " + blogId));
-        Like like = modelMapper.map(likeDto, Like.class);
+        UserContext userContext = UserContextHolder.getUserDetails();
+        Long userId = userContext.getUserId();
+        boolean alreadyLiked = likeRepository.existsByBlogIdAndUser(blogId, userId);
+        if (alreadyLiked) {
+            throw new IllegalState("User has already liked this blog");
+        }
+        Like like = new Like();
         like.setBlog(blog);
+        like.setUserId(userId);
         Like savedLike = likeRepository.save(like);
         log.info("Like added successfully with ID: {}", savedLike.getId());
-        return modelMapper.map(savedLike, LikeDto.class);
     }
 
     @Override
@@ -144,8 +176,10 @@ public class BlogServiceImpl implements BlogService {
         log.info("Adding comment to blog with ID: {}", blogId);
         Blog blog = blogRepository.findById(blogId)
                 .orElseThrow(() -> new ResourceNotFound("Blog not found with ID: " + blogId));
+        UserContext userContext = UserContextHolder.getUserDetails();
         Comment comment = modelMapper.map(commentDto, Comment.class);
         comment.setBlog(blog);
+        comment.setUserId(userContext.getUserId());
         Comment savedComment = commentRepository.save(comment);
         log.info("Comment added successfully with ID: {}", savedComment.getId());
         return modelMapper.map(savedComment, CommentDto.class);
@@ -153,15 +187,16 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     @Transactional
-    public CommentDto updateComment(Long blogId, Long commentId, CommentDto commentDto) {
-        log.info("Updating comment with ID: {} on blog with ID: {}", commentId, blogId);
-        Comment comment = commentRepository.findByBlogIdAndId(blogId, commentId)
-                .orElseThrow(() -> new ResourceNotFound("Comment not found with ID: " + commentId));
-        modelMapper.map(commentDto, comment);
-        comment.setUpdatedAt(LocalDateTime.now());
-        Comment updatedComment = commentRepository.save(comment);
-        log.info("Comment updated successfully with ID: {}", commentId);
-        return modelMapper.map(updatedComment, CommentDto.class);
+    public void updateComment(Long blogId, Long commentId, String content) {
+        log.info("Updating comment content for ID: {} on blog ID: {}", commentId, blogId);
+
+        int updatedRows = commentRepository.updateCommentContent(blogId, commentId, content);
+
+        if (updatedRows == 0) {
+            throw new ResourceNotFound("Comment not found with ID: " + commentId);
+        }
+
+        log.info("Comment content updated successfully for ID: {}", commentId);
     }
 
     @Override
@@ -176,15 +211,13 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     @Cacheable(value = "likesForBlog", key = "#blogId")
-    public List<LikeDto> getLikesForBlog(Long blogId) {
-        log.info("Fetching likes for blog with ID: {}", blogId);
-        return likeRepository.findByBlogId(blogId).stream()
-                .map(like -> modelMapper.map(like, LikeDto.class))
-                .collect(Collectors.toList());
+    public Integer getLikesCountForBlog(Long blogId) {
+        log.info("Fetching likes count for blog with ID: {}", blogId);
+        return likeRepository.countByBlogId(blogId);
     }
 
     @Override
-    @Cacheable(value = "commentsForBlog", key = "#blogId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "commentsForBlog", key = "#blogId")
     public List<CommentDto> getCommentsForBlog(Long blogId) {
         log.info("Fetching comments for blog with ID: {}", blogId);
         List<Comment> comments = commentRepository.findByBlogId(blogId);
@@ -214,12 +247,13 @@ public class BlogServiceImpl implements BlogService {
     @Override
     @Transactional
     @CacheEvict(value = "blog", key = "#blogId")
-    public BlogResponseDto updateBlogStatus(Long blogId, BlogStatus status) {
+    public BlogResponseDto updateBlogStatus(Long blogId, String status) {
         log.info("Updating blog status with ID: {} to: {}", blogId, status);
+        BlogStatus blogStatus = BlogStatus.valueOf(status.toUpperCase());
         Blog blog = blogRepository
                 .findById(blogId)
                 .orElseThrow(() -> new ResourceNotFound("Blog not found with ID: " + blogId));
-        blog.setStatus(status);
+        blog.setStatus(blogStatus);
         Blog updatedBlog = blogRepository.save(blog);
         log.info("Blog status updated successfully with ID: {}", blogId);
         return modelMapper.map(updatedBlog, BlogResponseDto.class);
@@ -241,12 +275,11 @@ public class BlogServiceImpl implements BlogService {
     @Cacheable(value = "filterBlogs", key = "#authorId + '-' + #status + '-' + #category + '-' + #tags + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<BlogResponseDto> advanceFilterBlogs(
             Long authorId,
-            BlogStatus status,
             String category,
             String tags,
             Pageable pageable) {
-        log.info("Filtering blogs with authorId: {}, status: {}, category: {}, tags: {}", authorId, status, category, tags);
-        return blogRepository.advanceFilterBlogs(authorId, status, category, tags, pageable)
+        log.info("Filtering blogs with authorId: {}, category: {}, tags: {}", authorId, category, tags);
+        return blogRepository.advanceFilterBlogs(authorId,category, tags, pageable)
                 .map(blog -> modelMapper.map(blog, BlogResponseDto.class));
     }
 }

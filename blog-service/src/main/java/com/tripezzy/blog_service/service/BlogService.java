@@ -3,8 +3,6 @@ package com.tripezzy.blog_service.service;
 import com.tripezzy.blog_service.dto.BlogDto;
 import com.tripezzy.blog_service.dto.BlogResponseDto;
 import com.tripezzy.blog_service.dto.CommentDto;
-import com.tripezzy.blog_service.dto.LikeDto;
-import com.tripezzy.blog_service.entity.enums.BlogStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,23 +17,25 @@ public interface BlogService {
 
     Page<BlogResponseDto> getBlogsByAuthorId(Long authorId, Pageable pageable);
 
-    Page<BlogResponseDto> getBlogsByStatus(String status, Pageable pageable);
+    Page<BlogResponseDto> getBlogsByTag(String tag, Pageable pageable);
+
+    Page<BlogResponseDto> getBlogsByCategory(String category, Pageable pageable);
 
     BlogResponseDto updateBlog(Long blogId, BlogDto blogDto);
 
     void deleteBlog(Long blogId);
 
-    LikeDto addLikeToBlog(Long blogId, LikeDto likeDto);
+    void addLikeToBlog(Long blogId);
 
     void removeLikeFromBlog(Long blogId, Long likeId);
 
     CommentDto addCommentToBlog(Long blogId, CommentDto commentDto);
 
-    CommentDto updateComment(Long blogId, Long commentId, CommentDto commentDto);
+    void updateComment(Long blogId, Long commentId, String content);
 
     void deleteComment(Long blogId, Long commentId);
 
-    List<LikeDto> getLikesForBlog(Long blogId);
+    Integer getLikesCountForBlog(Long blogId);
 
     List<CommentDto> getCommentsForBlog(Long blogId);
 
@@ -43,14 +43,15 @@ public interface BlogService {
 
     Page<BlogResponseDto> filterBlogs(String category, String tags, Pageable pageable);
 
-    BlogResponseDto updateBlogStatus(Long blogId, BlogStatus status);
+    BlogResponseDto updateBlogStatus(Long blogId, String status);
 
     void softDeleteBlog(Long blogId);
 
     Page<BlogResponseDto> advanceFilterBlogs(
             Long authorId,
-            BlogStatus status,
             String category,
             String tags,
             Pageable pageable);
+
+    Page<BlogResponseDto> getPublishedBlogs(Pageable pageable);
 }

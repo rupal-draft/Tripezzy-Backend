@@ -65,6 +65,9 @@ public class Blog {
     @Column(name = "deleted", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean deleted = false;
 
+    public Blog() {
+    }
+
     public Blog(Long id, String title, String content, Long authorId, List<Like> likes, List<Comment> comments, LocalDateTime createdAt, LocalDateTime updatedAt, BlogStatus status, String category, String tag, boolean deleted) {
         this.id = id;
         this.title = title;

@@ -10,7 +10,6 @@ public class BlogResponseDto {
     private String title;
     private String content;
     private Long authorId;
-    private List<LikeDto> likes;
     private List<CommentDto> comments;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -35,9 +34,7 @@ public class BlogResponseDto {
         return authorId;
     }
 
-    public List<LikeDto> getLikes() {
-        return likes;
-    }
+
 
     public List<CommentDto> getComments() {
         return comments;
@@ -61,5 +58,45 @@ public class BlogResponseDto {
 
     public String getTag() {
         return tag;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
+    }
+
+    public void setComments(List<CommentDto> comments) {
+        this.comments = comments;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setStatus(BlogStatus status) {
+        this.status = status;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 }
