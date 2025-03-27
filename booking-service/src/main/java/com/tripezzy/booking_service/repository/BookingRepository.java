@@ -14,7 +14,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -46,6 +45,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> , JpaSpe
     );
 
     @Modifying
-    @Query("UPDATE Booking b SET b.deleted = true WHERE b.id = :id")
-    void softDeleteById(@Param("id") Long id);
+    @Query("UPDATE Booking b SET b.deleted = true and b.status = :status WHERE b.id = :id")
+    void softDeleteById(@Param("id") Long id, @Param("status") Status status);
 }

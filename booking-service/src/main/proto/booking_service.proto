@@ -11,6 +11,7 @@ service BookingService {
     rpc GetBookingsByDestinationId (DestinationBookingsRequest) returns (BookingResponse);
     rpc SoftDeleteBooking (DeleteBookingRequest) returns (DeleteBookingResponse);
     rpc GetBookingsByPaymentStatus (PaymentStatusRequest) returns (BookingResponse);
+    rpc GetBookingsByStatus (StatusRequest) returns (BookingResponse);
     rpc ConfirmBooking (ConfirmBookingRequest) returns (BookingResponseSingle);
     rpc GetBookingPayment (BookingPaymentRequest) returns (BookingPaymentResponse);
 }
@@ -42,6 +43,12 @@ message DeleteBookingResponse {
 
 message PaymentStatusRequest {
     string paymentStatus = 1;
+}
+
+message StatusRequest {
+    string status = 1;
+    int32 page = 2;
+    int32 size = 3;
 }
 
 message ConfirmBookingRequest {

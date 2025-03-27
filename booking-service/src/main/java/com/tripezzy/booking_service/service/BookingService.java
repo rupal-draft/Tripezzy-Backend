@@ -2,12 +2,10 @@ package com.tripezzy.booking_service.service;
 
 import com.tripezzy.booking_service.dto.BookingDto;
 import com.tripezzy.booking_service.dto.BookingPaymentDto;
-import com.tripezzy.booking_service.entity.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 public interface BookingService {
@@ -28,20 +26,17 @@ public interface BookingService {
 
     List<BookingDto> getBookingsByPaymentStatusAndPriceRange(String paymentStatus, BigDecimal minPrice, BigDecimal maxPrice);
 
-    List<BookingDto> getUpcomingBookingsByStatus(Status status);
+    List<BookingDto> getUpcomingBookingsByStatus(String status);
 
-    long countBookingsByStatus(Status status);
-
-    void cancelBooking(Long bookingId);
+    long countBookingsByStatus(String status);
 
     void softDeleteBooking(Long bookingId);
 
     List<BookingDto> getBookingsByPaymentStatus(String paymentStatus);
 
-    Page<BookingDto> filterBookings(Long userId, Long destinationId, Status status, String paymentStatus, BigDecimal minPrice, BigDecimal maxPrice, LocalDate startDate, LocalDate endDate, Pageable pageable);
+    Page<BookingDto> filterBookings(Long userId, Long destinationId, String status, String paymentStatus, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 
     BookingDto confirmBooking(Long bookingId);
 
     BookingPaymentDto getBookingPayment(Long bookingId);
-
 }

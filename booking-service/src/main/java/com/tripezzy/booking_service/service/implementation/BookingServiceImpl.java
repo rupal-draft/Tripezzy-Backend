@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -123,31 +122,20 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Cacheable(value = "upcomingBookings", key = "#status")
-    public List<BookingDto> getUpcomingBookingsByStatus(Status status) {
+    public List<BookingDto> getUpcomingBookingsByStatus(String status) {
         log.info("Fetching upcoming bookings with status: " + status);
-        return bookingRepository.findUpcomingBookingsByStatus(status).stream()
+        Status statusEnum = Status.valueOf(status);
+        return bookingRepository.findUpcomingBookingsByStatus(statusEnum).stream()
                 .map(booking -> modelMapper.map(booking, BookingDto.class))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public long countBookingsByStatus(Status status) {
+    public long countBookingsByStatus(String status) {
         log.info("Counting bookings with status: " + status);
-        return bookingRepository.countByStatus(status);
+        return bookingRepository.countByStatus(Status.valueOf(status));
     }
 
-    @Override
-    @Transactional
-    @CacheEvict(value = "booking", key = "#bookingId")
-    public void cancelBooking(Long bookingId) {
-        log.info("Cancelling booking with ID: " + bookingId);
-        Booking booking = bookingRepository
-                .findById(bookingId)
-                .orElseThrow(() -> new ResourceNotFound("Booking not found with ID: " + bookingId));
-        booking.setStatus(Status.CANCELLED);
-        bookingRepository.save(booking);
-        log.info("Booking cancelled successfully with ID: " + bookingId);
-    }
 
     @Override
     @Transactional
@@ -157,7 +145,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository
                 .findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFound("Booking not found with ID: " + bookingId));
-        bookingRepository.softDeleteById(bookingId);
+        bookingRepository.softDeleteById(bookingId,Status.CANCELLED);
         log.info("Booking soft deleted successfully with ID: " + bookingId);
     }
 
@@ -172,17 +160,17 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Page<BookingDto> filterBookings(Long userId, Long destinationId, Status status, String paymentStatus, BigDecimal minPrice, BigDecimal maxPrice, LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        Specification<Booking> spec = Specification.where(null);
-
-        if (userId != null) spec = spec.and((root, query, cb) -> cb.equal(root.get("userId"), userId));
-        if (destinationId != null) spec = spec.and((root, query, cb) -> cb.equal(root.get("destinationId"), destinationId));
-        if (status != null) spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
-        if (paymentStatus != null) spec = spec.and((root, query, cb) -> cb.equal(root.get("paymentStatus"), paymentStatus));
+    public Page<BookingDto> filterBookings(Long userId, Long destinationId, String status, String paymentStatus, BigDecimal minPrice, BigDecimal maxPrice,  Pageable pageable) {
+        Specification<Booking> spec = Specification.where((root, query, cb) -> cb.equal(root.get("deleted"), false));
+        Status statusEnum = status != null ? Status.valueOf(status) : null;
+        PaymentStatus paymentStatusEnum = paymentStatus != null ? PaymentStatus.valueOf(paymentStatus) : null;
+        if (userId != null) spec = spec.and((root, query, cb) -> cb.equal(root.get("user"), userId));
+        if (destinationId != null) spec = spec.and((root, query, cb) -> cb.equal(root.get("destination"), destinationId));
+        if (status != null) spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), statusEnum));
+        if (paymentStatus != null) spec = spec.and((root, query, cb) -> cb.equal(root.get("paymentStatus"), paymentStatusEnum));
         if (minPrice != null) spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("totalPrice"), minPrice));
         if (maxPrice != null) spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("totalPrice"), maxPrice));
-        if (startDate != null) spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("travelDate"), startDate));
-        if (endDate != null) spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("travelDate"), endDate));
+
 
         return bookingRepository.findAll(spec, pageable).map(booking -> modelMapper.map(booking, BookingDto.class));
     }
@@ -197,6 +185,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         booking.setStatus(Status.CONFIRMED);
+        booking.setPaymentStatus(PaymentStatus.PAID);
         bookingRepository.save(booking);
 
         return modelMapper.map(booking,BookingDto.class);

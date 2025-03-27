@@ -33,10 +33,6 @@ resilience4j:
         limitForPeriod: 15
         limitRefreshPeriod: 1s
         timeoutDuration: 0
-      travelDateRangeRateLimiter:
-        limitForPeriod: 10
-        limitRefreshPeriod: 1s
-        timeoutDuration: 0
       paymentStatusPriceRangeRateLimiter:
         limitForPeriod: 10
         limitRefreshPeriod: 1s
@@ -58,10 +54,6 @@ resilience4j:
         limitRefreshPeriod: 1s
         timeoutDuration: 0
       paymentStatusRateLimiter:
-        limitForPeriod: 10
-        limitRefreshPeriod: 1s
-        timeoutDuration: 0
-      confirmBookingRateLimiter:
         limitForPeriod: 10
         limitRefreshPeriod: 1s
         timeoutDuration: 0

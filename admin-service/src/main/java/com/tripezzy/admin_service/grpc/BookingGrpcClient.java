@@ -56,19 +56,6 @@ public class BookingGrpcClient {
         return response.getBookingsList();
     }
 
-    @Cacheable(value = "bookingsByTravelDateRange", key = "bookingsByTravelDateRange + #startDate + '-' + #endDate + '-' + #page + '-' + #size")
-    public List<Booking> getBookingsByTravelDateRange(String startDate, String endDate, int page, int size) {
-        DateRangeRequest request = DateRangeRequest.newBuilder()
-                .setStartDate(startDate)
-                .setEndDate(endDate)
-                .setPage(page)
-                .setSize(size)
-                .build();
-
-        BookingResponse response = bookingStub.getBookingsByTravelDateRange(request);
-        return response.getBookingsList();
-    }
-
     public boolean softDeleteBooking(Long bookingId) {
         DeleteBookingRequest request = DeleteBookingRequest.newBuilder()
                 .setBookingId(bookingId)
@@ -85,6 +72,18 @@ public class BookingGrpcClient {
                 .build();
 
         BookingResponse response = bookingStub.getBookingsByPaymentStatus(request);
+        return response.getBookingsList();
+    }
+
+    @Cacheable(value = "bookingsByPaymentStatus", key = "bookingsByStatus + #status" + '-' + "#page" + '-' + "#size")
+    public List<Booking> getBookingsByStatus(String status, int page, int size) {
+        StatusRequest request = StatusRequest.newBuilder()
+                .setStatus(status)
+                .setSize(size)
+                .setPage(page)
+                .build();
+
+        BookingResponse response = bookingStub.getBookingsByStatus(request);
         return response.getBookingsList();
     }
 

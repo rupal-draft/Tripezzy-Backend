@@ -73,6 +73,14 @@ public class BookingGrpcService extends BookingServiceGrpc.BookingServiceImplBas
     }
 
     @Override
+    public void getBookingsByStatus(StatusRequest request, StreamObserver<BookingResponse> responseObserver) {
+        Page<BookingDto> bookingPage = bookingService.getBookingsByStatus(request.getStatus(),
+                PageRequest.of(request.getPage(), request.getSize()));
+
+        sendBookingResponse(bookingPage, responseObserver);
+    }
+
+    @Override
     public void confirmBooking(ConfirmBookingRequest request, StreamObserver<BookingResponseSingle> responseObserver) {
         BookingDto confirmedBooking = bookingService.confirmBooking(request.getBookingId());
 

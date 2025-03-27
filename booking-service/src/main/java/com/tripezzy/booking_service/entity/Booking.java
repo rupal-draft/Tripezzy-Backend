@@ -81,7 +81,7 @@ public class Booking {
     @Column(name = "payment_status")
     @NotNull(message = "Payment status cannot be null")
     @Enumerated(EnumType.STRING)
-    private PaymentStatus paymentStatus = PaymentStatus.PENDING;
+    private PaymentStatus paymentStatus = PaymentStatus.DUE;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)

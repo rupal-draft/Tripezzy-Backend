@@ -58,15 +58,6 @@ public class AdminController {
         return ResponseEntity.ok(bookingGrpcClient.getBookingsByDestinationId(destinationId, page, size));
     }
 
-    @GetMapping("/bookings/travel-date-range")
-    @RoleRequired("ADMIN")
-    public ResponseEntity<List<Booking>> getBookingsByTravelDateRange(@RequestParam String startDate,
-                                                      @RequestParam String endDate,
-                                                      @RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(bookingGrpcClient.getBookingsByTravelDateRange(startDate, endDate, page, size));
-    }
-
     @DeleteMapping("/soft-delete/{bookingId}")
     @RoleRequired("ADMIN")
     public ResponseEntity<Void> softDeleteBooking(@PathVariable Long bookingId) {
@@ -74,10 +65,18 @@ public class AdminController {
         return success ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/payment-status/{paymentStatus}")
+    @GetMapping("/payment-status")
     @RoleRequired("ADMIN")
-    public ResponseEntity<List<Booking>> getBookingsByPaymentStatus(@PathVariable String paymentStatus) {
+    public ResponseEntity<List<Booking>> getBookingsByPaymentStatus(@RequestParam String paymentStatus) {
         return ResponseEntity.ok(bookingGrpcClient.getBookingsByPaymentStatus(paymentStatus));
+    }
+
+    @GetMapping("/status")
+    @RoleRequired("ADMIN")
+    public ResponseEntity<List<Booking>> getBookingsByStatus(@RequestParam String status,
+                                                              @RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(bookingGrpcClient.getBookingsByStatus(status, page, size));
     }
 
     @PatchMapping("/{bookingId}/confirm")
