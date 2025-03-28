@@ -9,12 +9,12 @@ public class CartDto {
     @NotNull(message = "User ID cannot be null")
     private Long userId;
 
-    private List<CartItemDto> items;
+    private List<CartItemResponseDto> items;
 
     public CartDto() {
     }
 
-    public CartDto(Long userId, List<CartItemDto> items) {
+    public CartDto(Long userId, List<CartItemResponseDto> items) {
         this.userId = userId;
         this.items = items;
     }
@@ -27,11 +27,11 @@ public class CartDto {
         this.userId = userId;
     }
 
-    public List<CartItemDto> getItems() {
+    public List<CartItemResponseDto> getItems() {
         return items;
     }
 
-    public void setItems(List<CartItemDto> items) {
+    public void setItems(List<CartItemResponseDto> items) {
         this.items = items;
     }
 }

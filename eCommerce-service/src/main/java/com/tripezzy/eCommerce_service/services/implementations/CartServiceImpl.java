@@ -1,8 +1,6 @@
 package com.tripezzy.eCommerce_service.services.implementations;
 
-import com.tripezzy.eCommerce_service.dto.CartDto;
-import com.tripezzy.eCommerce_service.dto.CartItemDto;
-import com.tripezzy.eCommerce_service.dto.CartPaymentDto;
+import com.tripezzy.eCommerce_service.dto.*;
 import com.tripezzy.eCommerce_service.entity.Cart;
 import com.tripezzy.eCommerce_service.entity.CartItem;
 import com.tripezzy.eCommerce_service.entity.Product;
@@ -20,6 +18,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,6 +49,7 @@ public class CartServiceImpl implements CartService {
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
                     newCart.setUserId(userId);
+                    newCart.setItems(new ArrayList<>());
                     return cartRepository.save(newCart);
                 });
 
@@ -87,7 +88,16 @@ public class CartServiceImpl implements CartService {
         log.info("Fetching cart for user ID: {}", userId);
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFound("Cart not found for user ID: " + userId));
-        return modelMapper.map(cart, CartDto.class);
+
+        List<CartItemResponseDto> itemDtos = cart
+                .getItems()
+                .stream()
+                .map(item ->
+                        new CartItemResponseDto(modelMapper
+                                .map(item.getProduct(), ProductDto.class), item.getQuantity()))
+                .collect(Collectors.toList());
+
+        return new CartDto(cart.getUserId(), itemDtos);
     }
 
     @Override
@@ -105,6 +115,8 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional
+    @CacheEvict(value = "cart", key = "#userId")
     public double calculateTotalCost(Long userId, String discountType, Double discountPercentage, Integer minQuantity) {
         log.info("Calculating total cost for user ID: {}", userId);
         Cart cart = cartRepository
