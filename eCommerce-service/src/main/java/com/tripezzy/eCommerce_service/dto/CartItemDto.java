@@ -11,6 +11,9 @@ public class CartItemDto {
     @Positive(message = "Quantity must be positive")
     private Integer quantity;
 
+    public CartItemDto() {
+    }
+
     public CartItemDto(Long productId, Integer quantity) {
         this.productId = productId;
         this.quantity = quantity;

@@ -11,6 +11,5 @@ public interface ProductService {
     Page<ProductDto> filterProducts(String category, Double minPrice, Double maxPrice, Pageable pageable);
     Page<ProductDto> searchProducts(String query, Pageable pageable);
     ProductDto updateProduct(Long productId, ProductDto productDto);
-    void deleteProduct(Long productId);
     void softDeleteProduct(Long productId);
 }

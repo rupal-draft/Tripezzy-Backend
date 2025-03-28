@@ -38,6 +38,9 @@ public class Cart {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public Cart() {
+    }
+
     public Long getId() {
         return id;
     }

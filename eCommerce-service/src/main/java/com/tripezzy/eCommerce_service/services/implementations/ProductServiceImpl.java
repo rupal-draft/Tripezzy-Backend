@@ -85,17 +85,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @CacheEvict(value = "product", key = "#productId")
-    @Transactional
-    public void deleteProduct(Long productId) {
-        log.info("Deleting product with ID: {}", productId);
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFound("Product not found with ID: " + productId));
-        productRepository.delete(product);
-        log.info("Product deleted successfully with ID: {}", productId);
-    }
-
-    @Override
     @Transactional
     @CacheEvict(value = "product", key = "#productId")
     public void softDeleteProduct(Long productId) {

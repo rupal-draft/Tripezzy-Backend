@@ -1,33 +1,34 @@
 package com.tripezzy.eCommerce_service.dto;
 
-import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
 
 public class WishlistDto {
 
-    @NotNull(message = "User ID cannot be null")
     private Long userId;
+    private List<ProductDto> productDtos;
 
-    @NotNull(message = "Product ID cannot be null")
-    private Long productId;
-
-    public WishlistDto(Long userId, Long productId) {
-        this.userId = userId;
-        this.productId = productId;
+    public WishlistDto() {
     }
 
-    public @NotNull(message = "User ID cannot be null") Long getUserId() {
+    public WishlistDto(Long userId, List<ProductDto> productDtos) {
+        this.userId = userId;
+        this.productDtos = productDtos;
+    }
+
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(@NotNull(message = "User ID cannot be null") Long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public @NotNull(message = "Product ID cannot be null") Long getProductId() {
-        return productId;
+    public List<ProductDto> getProductDtos() {
+        return productDtos;
     }
 
-    public void setProductId(@NotNull(message = "Product ID cannot be null") Long productId) {
-        this.productId = productId;
+    public void setProductDtos(List<ProductDto> productDtos) {
+        this.productDtos = productDtos;
     }
 }

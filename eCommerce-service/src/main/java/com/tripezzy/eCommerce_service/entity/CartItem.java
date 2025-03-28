@@ -40,6 +40,9 @@ public class CartItem {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public CartItem() {
+    }
+
     public Long getId() {
         return id;
     }

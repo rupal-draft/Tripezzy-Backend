@@ -55,6 +55,8 @@ public class Product {
     @Column(name = "deleted", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean deleted = false;
 
+    public Product() {
+    }
 
     public Product(Long id, String name, String description, Double price, Integer stock, String category, String imageUrl, LocalDateTime createdAt, LocalDateTime updatedAt, boolean deleted) {
         this.id = id;

@@ -6,12 +6,13 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "wishlists", indexes = {
-        @Index(name = "idx_wishlist_user_id", columnList = "user_id"),
-        @Index(name = "idx_wishlist_product_id", columnList = "product_id")
+        @Index(name = "idx_wishlist_user_id", columnList = "user_id")
 })
 public class Wishlist {
 
@@ -20,22 +21,28 @@ public class Wishlist {
     private Long id;
 
     @NotNull(message = "User ID cannot be null")
-    @Column(name = "user_id")
+    @Column(name = "user_id", unique = true)
     private Long userId;
 
-    @NotNull(message = "Product cannot be null")
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(
+            name = "wishlist_products",
+            joinColumns = @JoinColumn(name = "wishlist_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private List<Product> products = new ArrayList<>();
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public Wishlist(Long id, Long userId, Product product, LocalDateTime createdAt) {
+    public Wishlist() {
+    }
+
+    public Wishlist(Long id, Long userId, List<Product> products, LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
-        this.product = product;
+        this.products = products;
         this.createdAt = createdAt;
     }
 
@@ -47,20 +54,24 @@ public class Wishlist {
         this.id = id;
     }
 
-    public @NotNull(message = "User ID cannot be null") Long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(@NotNull(message = "User ID cannot be null") Long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public @NotNull(message = "Product cannot be null") Product getProduct() {
-        return product;
+    public List<Product> getProducts() {
+        return products;
     }
 
-    public void setProduct(@NotNull(message = "Product cannot be null") Product product) {
-        this.product = product;
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
+    public void addProduct(Product product) {
+        this.products.add(product);
     }
 
     public LocalDateTime getCreatedAt() {
@@ -71,3 +82,4 @@ public class Wishlist {
         this.createdAt = createdAt;
     }
 }
+

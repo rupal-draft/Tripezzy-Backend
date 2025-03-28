@@ -1,5 +1,7 @@
 package com.tripezzy.eCommerce_service.controllers;
 
+import com.tripezzy.eCommerce_service.advices.ApiError;
+import com.tripezzy.eCommerce_service.advices.ApiResponse;
 import com.tripezzy.eCommerce_service.annotations.RoleRequired;
 import com.tripezzy.eCommerce_service.dto.ProductDto;
 import com.tripezzy.eCommerce_service.services.ProductService;
@@ -22,26 +24,27 @@ public class ProductController {
 
     @PostMapping
     @RoleRequired("SELLER")
-    @RateLimiter(name = "productRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RateLimiter(name = "productRateLimiter", fallbackMethod = "createProductRateLimitFallback")
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
         ProductDto createdProduct = productService.createProduct(productDto);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
-    @GetMapping(path = "/{productId}")
-    @RateLimiter(name = "productRateLimiter", fallbackMethod = "rateLimitFallback")
+    @GetMapping(path = "/public/{productId}")
+    @RateLimiter(name = "productRateLimiter", fallbackMethod = "getProductByIdRateLimitFallback")
     public ResponseEntity<ProductDto> getProductById(@PathVariable Long productId) {
         return ResponseEntity.ok(productService.getProductById(productId));
     }
 
-    @GetMapping
+    @GetMapping("/public")
+    @RateLimiter(name = "productRateLimiter", fallbackMethod = "getAllProductsRateLimitFallback")
     public ResponseEntity<Page<ProductDto>> getAllProducts(Pageable pageable) {
         return ResponseEntity.ok(productService.getAllProducts(pageable));
     }
 
     @PutMapping("/{productId}")
     @RoleRequired("SELLER")
-    @RateLimiter(name = "productRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RateLimiter(name = "productRateLimiter", fallbackMethod = "updateProductRateLimitFallback")
     public ResponseEntity<ProductDto> updateProduct(
             @PathVariable Long productId,
             @RequestBody ProductDto productDto) {
@@ -49,16 +52,8 @@ public class ProductController {
         return ResponseEntity.ok(updatedProduct);
     }
 
-    @DeleteMapping("/{productId}")
-    @RoleRequired("SELLER")
-    @RateLimiter(name = "productRateLimiter", fallbackMethod = "rateLimitFallback")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
-        productService.deleteProduct(productId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/filter")
-    @RateLimiter(name = "productRateLimiter", fallbackMethod = "rateLimitFallback")
+    @GetMapping("/public/filter")
+    @RateLimiter(name = "productRateLimiter", fallbackMethod = "filterProductsRateLimitFallback")
     public ResponseEntity<Page<ProductDto>> filterProducts(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Double minPrice,
@@ -69,20 +64,53 @@ public class ProductController {
 
     @DeleteMapping("/soft-delete/{productId}")
     @RoleRequired("SELLER")
-    @RateLimiter(name = "productRateLimiter", fallbackMethod = "rateLimitFallback")
-    public ResponseEntity<Void> softDeleteProduct(@PathVariable Long productId) {
+    @RateLimiter(name = "productRateLimiter", fallbackMethod = "softDeleteProductRateLimitFallback")
+    public ResponseEntity<ApiResponse<String>> softDeleteProduct(@PathVariable Long productId) {
         productService.softDeleteProduct(productId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.success("Product soft deleted successfully"));
     }
 
-    @GetMapping("/search")
-    @RateLimiter(name = "productRateLimiter", fallbackMethod = "rateLimitFallback")
+    @GetMapping("/public/search")
+    @RateLimiter(name = "productRateLimiter", fallbackMethod = "searchProductsRateLimitFallback")
     public ResponseEntity<Page<ProductDto>> searchProducts(@RequestParam String query, Pageable pageable) {
         return ResponseEntity.ok(productService.searchProducts(query, pageable));
     }
 
-    public ResponseEntity<String> rateLimitFallback() {
+    public ResponseEntity<ApiResponse<String>> rateLimitFallback(String serviceName, Throwable throwable) {
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .setMessage("Too many requests to " + serviceName + ". Please try again later.")
+                .setStatus(HttpStatus.TOO_MANY_REQUESTS)
+                .build();
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                .body("Too many requests. Please try again later.");
+                .body(ApiResponse.error(apiError));
     }
+
+    public ResponseEntity<ApiResponse<String>> createProductRateLimitFallback(ProductDto productDto, Throwable throwable) {
+        return rateLimitFallback("createProduct", throwable);
+    }
+
+    public ResponseEntity<ApiResponse<String>> getProductByIdRateLimitFallback(Long productId, Throwable throwable) {
+        return rateLimitFallback("getProductById", throwable);
+    }
+
+    public ResponseEntity<ApiResponse<String>> getAllProductsRateLimitFallback(Pageable pageable, Throwable throwable) {
+        return rateLimitFallback("getAllProducts", throwable);
+    }
+
+    public ResponseEntity<ApiResponse<String>> updateProductRateLimitFallback(Long productId, ProductDto productDto, Throwable throwable) {
+        return rateLimitFallback("updateProduct", throwable);
+    }
+
+    public ResponseEntity<ApiResponse<String>> filterProductsRateLimitFallback(String category, Double minPrice, Double maxPrice, Pageable pageable, Throwable throwable) {
+        return rateLimitFallback("filterProducts", throwable);
+    }
+
+    public ResponseEntity<ApiResponse<String>> softDeleteProductRateLimitFallback(Long productId, Throwable throwable) {
+        return rateLimitFallback("softDeleteProduct", throwable);
+    }
+
+    public ResponseEntity<ApiResponse<String>> searchProductsRateLimitFallback(String query, Pageable pageable, Throwable throwable) {
+        return rateLimitFallback("searchProducts", throwable);
+    }
+
 }

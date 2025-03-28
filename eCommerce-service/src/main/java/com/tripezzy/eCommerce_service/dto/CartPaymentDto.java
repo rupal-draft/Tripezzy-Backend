@@ -19,6 +19,9 @@ public class CartPaymentDto {
     @NotBlank(message = "Currency is required")
     private String currency;
 
+    public CartPaymentDto() {
+    }
+
     public @NotNull(message = "Amount is required") @Min(value = 1, message = "Amount must be at least 1") double getAmount() {
         return amount;
     }

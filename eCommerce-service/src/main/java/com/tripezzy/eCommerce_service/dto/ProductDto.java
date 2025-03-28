@@ -25,6 +25,9 @@ public class ProductDto {
     @NotBlank(message = "Image URL cannot be blank")
     private String imageUrl;
 
+    public ProductDto() {
+    }
+
     public ProductDto(String name, String description, Double price, Integer stock, String category, String imageUrl) {
         this.name = name;
         this.description = description;
