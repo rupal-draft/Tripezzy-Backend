@@ -8,7 +8,6 @@ import com.tripezzy.blog_service.auth.UserContextHolder;
 import com.tripezzy.blog_service.dto.BlogDto;
 import com.tripezzy.blog_service.dto.BlogResponseDto;
 import com.tripezzy.blog_service.dto.CommentDto;
-import com.tripezzy.blog_service.exceptions.RuntimeConflict;
 import com.tripezzy.blog_service.service.BlogService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.data.domain.Page;

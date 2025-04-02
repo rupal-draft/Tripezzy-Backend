@@ -1,7 +1,8 @@
 package com.tripezzy.admin_service.controller;
 
-import blog.Blog;
 import com.tripezzy.admin_service.annotations.RoleRequired;
+import com.tripezzy.admin_service.dto.BlogResponseDto;
+import com.tripezzy.admin_service.dto.ProductResponseDto;
 import com.tripezzy.admin_service.grpc.BlogGrpcClient;
 import com.tripezzy.admin_service.grpc.BookingGrpcClient;
 import com.tripezzy.admin_service.grpc.PaymentGrpcClient;
@@ -32,7 +33,7 @@ public class AdminController {
 
     @GetMapping("/blogs")
     @RoleRequired("ADMIN")
-    public ResponseEntity<List<Blog>> getAllBlogs(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<List<BlogResponseDto>> getAllBlogs(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(blogGrpcClient.getAllBlogs(page, size));
     }
 
@@ -87,8 +88,8 @@ public class AdminController {
 
     @GetMapping("/products")
     @RoleRequired("ADMIN")
-    public List<Product> getAllProducts(@RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int size) {
+    public List<ProductResponseDto> getAllProducts(@RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "10") int size) {
         return productGrpcClient.getAllProducts(page, size);
     }
 
