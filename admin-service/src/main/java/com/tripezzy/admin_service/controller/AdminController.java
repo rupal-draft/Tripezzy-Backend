@@ -1,7 +1,10 @@
 package com.tripezzy.admin_service.controller;
 
+import com.tripezzy.admin_service.advices.ApiError;
+import com.tripezzy.admin_service.advices.ApiResponse;
 import com.tripezzy.admin_service.annotations.RoleRequired;
 import com.tripezzy.admin_service.dto.BlogResponseDto;
+import com.tripezzy.admin_service.dto.BookingDto;
 import com.tripezzy.admin_service.dto.ProductResponseDto;
 import com.tripezzy.admin_service.grpc.BlogGrpcClient;
 import com.tripezzy.admin_service.grpc.BookingGrpcClient;
@@ -10,6 +13,7 @@ import com.tripezzy.admin_service.grpc.ProductGrpcClient;
 import com.tripezzy.booking_service.grpc.Booking;
 import com.tripezzy.payment_service.grpc.PaymentsResponse;
 import com.tripezzy.product_service.grpc.Product;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,13 +43,13 @@ public class AdminController {
 
     @GetMapping("/bookings/paginated")
     @RoleRequired("ADMIN")
-    public List<Booking> getAllBookings(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public List<BookingDto> getAllBookings(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return bookingGrpcClient.getAllBookings(page, size);
     }
 
     @GetMapping("/bookings/user/{userId}")
     @RoleRequired("ADMIN")
-    public ResponseEntity<List<Booking>> getBookingsByUserId(@PathVariable Long userId,
+    public ResponseEntity<List<BookingDto>> getBookingsByUserId(@PathVariable Long userId,
                                              @RequestParam(defaultValue = "0") int page,
                                              @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(bookingGrpcClient.getBookingsByUserId(userId, page, size));
@@ -53,7 +57,7 @@ public class AdminController {
 
     @GetMapping("/bookings/destination/{destinationId}")
     @RoleRequired("ADMIN")
-    public ResponseEntity<List<Booking>> getBookingsByDestinationId(@PathVariable Long destinationId,
+    public ResponseEntity<List<BookingDto>> getBookingsByDestinationId(@PathVariable Long destinationId,
                                                     @RequestParam(defaultValue = "0") int page,
                                                     @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(bookingGrpcClient.getBookingsByDestinationId(destinationId, page, size));
@@ -61,20 +65,25 @@ public class AdminController {
 
     @DeleteMapping("/soft-delete/{bookingId}")
     @RoleRequired("ADMIN")
-    public ResponseEntity<Void> softDeleteBooking(@PathVariable Long bookingId) {
+    public ResponseEntity<ApiResponse<String>> softDeleteBooking(@PathVariable Long bookingId) {
         boolean success = bookingGrpcClient.softDeleteBooking(bookingId);
-        return success ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        return success ? ResponseEntity.ok(ApiResponse.success("Booking deleted successfully"))
+                : ResponseEntity.ok(ApiResponse.error(new ApiError
+                .ApiErrorBuilder()
+                .setStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                .setMessage("Booking failed to delete")
+                .build()));
     }
 
     @GetMapping("/payment-status")
     @RoleRequired("ADMIN")
-    public ResponseEntity<List<Booking>> getBookingsByPaymentStatus(@RequestParam String paymentStatus) {
+    public ResponseEntity<List<BookingDto>> getBookingsByPaymentStatus(@RequestParam String paymentStatus) {
         return ResponseEntity.ok(bookingGrpcClient.getBookingsByPaymentStatus(paymentStatus));
     }
 
     @GetMapping("/status")
     @RoleRequired("ADMIN")
-    public ResponseEntity<List<Booking>> getBookingsByStatus(@RequestParam String status,
+    public ResponseEntity<List<BookingDto>> getBookingsByStatus(@RequestParam String status,
                                                               @RequestParam(defaultValue = "0") int page,
                                                               @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(bookingGrpcClient.getBookingsByStatus(status, page, size));
@@ -82,7 +91,7 @@ public class AdminController {
 
     @PatchMapping("/{bookingId}/confirm")
     @RoleRequired("ADMIN")
-    public ResponseEntity<Booking> confirmBooking(@PathVariable Long bookingId) {
+    public ResponseEntity<BookingDto> confirmBooking(@PathVariable Long bookingId) {
         return ResponseEntity.ok(bookingGrpcClient.confirmBooking(bookingId));
     }
 
