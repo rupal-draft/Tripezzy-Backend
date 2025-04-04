@@ -6,6 +6,7 @@ This repository contains the code for a Payment Service microservice, built usin
 
 * **Payment Processing:**
     * Handles checkout for shopping carts using gRPC communication with the Cart Service.
+    * **Stripe Integration:** Uses Stripe for secure payment processing.
     * Handles checkout for bookings using gRPC communication with the Booking Service.
     * Stores payment information in a database.
 * **Payment Retrieval:**
@@ -30,6 +31,7 @@ This repository contains the code for a Payment Service microservice, built usin
 * Validation API
 * gRPC
 * Protobuf
+* **Stripe Java Library**
 
 ## Entities and Database Schemas
 
@@ -66,6 +68,30 @@ The service uses the following entity, which translates to a database schema:
 
 The service is configured using `application.properties` or `application.yml` (environment variable based).
 
+## Getting Started
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone [repository URL]
+    ```
+
+2.  **Build the project:**
+
+    ```bash
+    ./mvnw clean install
+    ```
+
+3.  **Run the application:**
+
+    ```bash
+    ./mvnw spring-boot:run
+    ```
+
+4.  **Configure environment variables:**
+    * Set the database credentials and other configuration properties in your environment.
+    * Configure gRPC client properties for connecting to the Cart and Booking services.
+
 ## Rate Limiter configuration.
 
 The Rate limiter is set with these parameters.
@@ -89,3 +115,33 @@ resilience4j:
         limitForPeriod: 10
         limitRefreshPeriod: 10s
         timeoutDuration: 1s
+   ```
+
+## Stripe Configuration
+
+Ensure that you have your Stripe API keys configured in your environment variables or application properties. This is crucial for successful payment processing.
+
+* Example application.properties configuration:
+
+```properties
+stripe.api.key={STRIPE_SECRET_KEY}
+stripe.api.secret={STRIPE_PUBLISHED_KEY}
+```
+
+## Stripe Configuration Class:
+
+```java
+@Configuration
+public class StripeConfig {
+
+    @Value("${stripe.secret}")
+    private String stripeSecret;
+
+    @PostConstruct
+    public void init() {
+        Stripe.apiKey = stripeSecret;
+    }
+}
+```
+## Role-Based Access Control (RBAC)
+Administrative endpoints are protected using a custom `@RoleRequired("ADMIN")` annotation. This annotation ensures that only users with the "ADMIN" role can access these endpoints. You'll need to implement the logic for validating user roles based on your authentication and authorization mechanism.
