@@ -1,6 +1,8 @@
 package com.tripezzy.admin_service.repository;
 
 import com.tripezzy.admin_service.entity.Destination;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +24,5 @@ public interface DestinationRepository extends JpaRepository<Destination, Long> 
     @Cacheable(value = "searchDestinations", key = "#keyword")
     List<Destination> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String keyword, String keyword1);
 
+    boolean existsByNameAndDeletedFalse(@NotBlank(message = "Destination name is required") @Size(max = 100, message = "Name must not exceed 100 characters") String name);
 }

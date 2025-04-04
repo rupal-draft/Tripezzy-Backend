@@ -1,6 +1,8 @@
 package com.tripezzy.admin_service.repository;
 
 import com.tripezzy.admin_service.entity.TourPackage;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,4 +26,6 @@ public interface TourRepository extends JpaRepository<TourPackage, Long> , JpaSp
 
     @Cacheable(value = "toursByDestination", key = "#destinationId")
     List<TourPackage> findByDestinationIdAndDeletedFalse(Long destinationId);
+
+    boolean existsByNameAndDeletedFalse(@NotBlank(message = "Name is required") @Size(max = 100, message = "Name must not exceed 100 characters") String name);
 }

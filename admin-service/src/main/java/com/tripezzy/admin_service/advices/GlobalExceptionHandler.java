@@ -38,6 +38,26 @@ public class GlobalExceptionHandler {
         return buildErrorResponseEntity(apiError);
     }
 
+    @ExceptionHandler(ServiceUnavailable.class)
+    public ResponseEntity<ApiResponse<?>> handleServiceUnavailableException(ServiceUnavailable exception) {
+        logger.error("Service unavailable: {}", exception.getMessage());
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .setStatus(HttpStatus.SERVICE_UNAVAILABLE)
+                .setMessage(exception.getLocalizedMessage())
+                .build();
+        return buildErrorResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiResponse<?>> handleBadRequestException(BadRequestException exception) {
+        logger.error("Bad request: {}", exception.getMessage());
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .setStatus(HttpStatus.BAD_REQUEST)
+                .setMessage(exception.getLocalizedMessage())
+                .build();
+        return buildErrorResponseEntity(apiError);
+    }
+
     @ExceptionHandler(AccessForbidden.class)
     public ResponseEntity<ApiResponse<?>> handleForbiddenAccess (AccessForbidden exception) {
         logger.error("Access forbidden: {}", exception.getMessage());
