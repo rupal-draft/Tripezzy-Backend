@@ -66,30 +66,6 @@ The service uses the following entity, which translates to a database schema:
 
 The service is configured using `application.properties` or `application.yml` (environment variable based).
 
-## Getting Started
-
-1.  **Clone the repository:**
-
-    ```bash
-    git clone [repository URL]
-    ```
-
-2.  **Build the project:**
-
-    ```bash
-    ./mvnw clean install
-    ```
-
-3.  **Run the application:**
-
-    ```bash
-    ./mvnw spring-boot:run
-    ```
-
-4.  **Configure environment variables:**
-    * Set the database credentials and other configuration properties in your environment.
-    * Configure gRPC client properties for connecting to the Cart and Booking services.
-
 ## Rate Limiter configuration.
 
 The Rate limiter is set with these parameters.
