@@ -1,4 +1,4 @@
-package com.tripezzy.booking_service.exception;
+package com.tripezzy.booking_service.exceptions;
 
 public class RuntimeConflict extends RuntimeException {
     public RuntimeConflict(String message) {

@@ -1,4 +1,4 @@
-package com.tripezzy.payment_service.exception;
+package com.tripezzy.booking_service.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;

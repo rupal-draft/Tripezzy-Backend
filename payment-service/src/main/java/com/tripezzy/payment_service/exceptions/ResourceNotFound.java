@@ -1,4 +1,4 @@
-package com.tripezzy.booking_service.exception;
+package com.tripezzy.payment_service.exceptions;
 
 public class ResourceNotFound extends RuntimeException {
     public ResourceNotFound(String message) {
