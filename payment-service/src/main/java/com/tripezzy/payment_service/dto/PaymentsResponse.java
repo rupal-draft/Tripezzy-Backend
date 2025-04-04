@@ -3,17 +3,16 @@ package com.tripezzy.payment_service.dto;
 import com.tripezzy.payment_service.entity.enums.PaymentCategory;
 import com.tripezzy.payment_service.entity.enums.PaymentStatus;
 
-
 import java.time.LocalDateTime;
 
 public class PaymentsResponse {
     private Long id;
 
-    private Long userId;
+    private Long user;
 
-    private Long referenceId ;
+    private Long reference ;
 
-    private String sessionId;
+    private String session;
 
     private PaymentStatus status;
 
@@ -29,11 +28,14 @@ public class PaymentsResponse {
 
     private LocalDateTime createdAt;
 
-    public PaymentsResponse(Long id, Long userId, Long referenceId, String sessionId, PaymentStatus status, Long amount, String currency, String name, PaymentCategory category, Long quantity, LocalDateTime createdAt) {
+    public PaymentsResponse() {
+    }
+
+    public PaymentsResponse(Long id, Long user, Long reference, String session, PaymentStatus status, Long amount, String currency, String name, PaymentCategory category, Long quantity, LocalDateTime createdAt) {
         this.id = id;
-        this.userId = userId;
-        this.referenceId = referenceId;
-        this.sessionId = sessionId;
+        this.user = user;
+        this.reference = reference;
+        this.session = session;
         this.status = status;
         this.amount = amount;
         this.currency = currency;
@@ -51,28 +53,28 @@ public class PaymentsResponse {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(Long user) {
+        this.user = user;
     }
 
-    public Long getReferenceId() {
-        return referenceId;
+    public Long getReference() {
+        return reference;
     }
 
-    public void setReferenceId(Long referenceId) {
-        this.referenceId = referenceId;
+    public void setReference(Long reference) {
+        this.reference = reference;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getSession() {
+        return session;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setSession(String session) {
+        this.session = session;
     }
 
     public PaymentStatus getStatus() {

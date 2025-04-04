@@ -1,7 +1,6 @@
 package com.tripezzy.admin_service.grpc;
 
 import com.tripezzy.admin_service.dto.ProductResponseDto;
-import com.tripezzy.product_service.grpc.Product;
 import com.tripezzy.product_service.grpc.ProductRequest;
 import com.tripezzy.product_service.grpc.ProductResponse;
 import com.tripezzy.product_service.grpc.ProductServiceGrpc;

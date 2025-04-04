@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payments", indexes = {
-    @Index(name = "idx_payment_session_id", columnList = "session_id")
+    @Index(name = "idx_payment_user_id", columnList = "user_id")
 })
 public class Payment {
 
@@ -17,15 +17,15 @@ public class Payment {
     private Long id;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private Long user;
 
     @Column(name = "reference", nullable = false)
-    private Long referenceId ;
+    private Long reference ;
 
-    @Column(name = "session_id", nullable = false, unique = true)
-    private String sessionId;
+    @Column(name = "session_id", nullable = false, unique = true, length = 512)
+    private String session;
 
-    @Column(name = "session_url", nullable = false)
+    @Column(name = "session_url", nullable = false, length = 1024)
     private String sessionUrl;
 
     @Column(name = "status", nullable = false)
@@ -72,20 +72,20 @@ public class Payment {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(Long userId) {
+        this.user = userId;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getSession() {
+        return session;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setSession(String sessionId) {
+        this.session = sessionId;
     }
 
     public String getSessionUrl() {
@@ -144,12 +144,12 @@ public class Payment {
         this.updatedAt = updatedAt;
     }
 
-    public Long getReferenceId() {
-        return referenceId;
+    public Long getReference() {
+        return reference;
     }
 
-    public void setReferenceId(Long referenceId) {
-        this.referenceId = referenceId;
+    public void setReference(Long referenceId) {
+        this.reference = referenceId;
     }
 
     public String getName() {

@@ -5,7 +5,7 @@ import com.tripezzy.payment_service.entity.enums.PaymentStatus;
 public class ResponseEcomPayment {
     private PaymentStatus status;
     private String message;
-    private String sessionId;
+    private String session;
     private String sessionUrl;
     private double amount;
     private Long quantity;
@@ -19,8 +19,8 @@ public class ResponseEcomPayment {
         return message;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getSession() {
+        return session;
     }
 
     public String getSessionUrl() {
@@ -46,7 +46,7 @@ public class ResponseEcomPayment {
     public ResponseEcomPayment(PaymentResponseBuilder builder) {
         this.status = builder.status;
         this.message = builder.message;
-        this.sessionId = builder.sessionId;
+        this.session = builder.session;
         this.sessionUrl = builder.sessionUrl;
         this.amount = builder.amount;
         this.quantity = builder.quantity;
@@ -57,7 +57,7 @@ public class ResponseEcomPayment {
     public static class PaymentResponseBuilder {
         private PaymentStatus status;
         private String message;
-        private String sessionId;
+        private String session;
         private String sessionUrl;
         private double amount;
         private Long quantity;
@@ -95,7 +95,7 @@ public class ResponseEcomPayment {
         }
 
         public PaymentResponseBuilder sessionId(String sessionId) {
-            this.sessionId = sessionId;
+            this.session = sessionId;
             return this;
         }
 

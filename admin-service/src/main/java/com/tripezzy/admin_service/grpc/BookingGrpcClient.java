@@ -60,7 +60,7 @@ public class BookingGrpcClient {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(value = "bookingsByUserId", key = "bookingsByUserId + #userId + '-' + #page + '-' + #size")
+    @Cacheable(value = "bookingsByUserId", key = "'bookingsByUserId-' + #userId + '-' + #page + '-' + #size")
     public List<BookingDto> getBookingsByUserId(Long userId, int page, int size) {
         UserBookingsRequest request = UserBookingsRequest.newBuilder()
                 .setUserId(userId)
@@ -84,7 +84,7 @@ public class BookingGrpcClient {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(value = "bookingsByDestinationId", key = "bookingsByDestinationId + #destinationId + '-' + #page + '-' + #size")
+    @Cacheable(value = "bookingsByDestinationId", key = "'bookingsByDestinationId-' + #destinationId + '-' + #page + '-' + #size")
     public List<BookingDto> getBookingsByDestinationId(Long destinationId, int page, int size) {
         DestinationBookingsRequest request = DestinationBookingsRequest.newBuilder()
                 .setDestinationId(destinationId)
@@ -117,7 +117,7 @@ public class BookingGrpcClient {
         return response.getSuccess();
     }
 
-    @Cacheable(value = "bookingsByPaymentStatus", key = "bookingsByPaymentStatus + #paymentStatus")
+    @Cacheable(value = "bookingsByPaymentStatus", key = "'bookingsByPaymentStatus-' + #paymentStatus")
     public List<BookingDto> getBookingsByPaymentStatus(String paymentStatus) {
         PaymentStatusRequest request = PaymentStatusRequest.newBuilder()
                 .setPaymentStatus(paymentStatus)
@@ -139,7 +139,7 @@ public class BookingGrpcClient {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(value = "bookingsByPaymentStatus", key = "bookingsByStatus + #status" + '-' + "#page" + '-' + "#size")
+    @Cacheable(value = "bookingsByStatus", key = "'bookingsByStatus-' + #status + '-' + #page + '-' + #size")
     public List<BookingDto> getBookingsByStatus(String status, int page, int size) {
         StatusRequest request = StatusRequest.newBuilder()
                 .setStatus(status)

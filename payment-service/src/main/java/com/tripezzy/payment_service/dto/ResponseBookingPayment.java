@@ -5,24 +5,24 @@ import com.tripezzy.payment_service.entity.enums.PaymentStatus;
 public class ResponseBookingPayment {
     private PaymentStatus status;
     private String message;
-    private String sessionId;
+    private String session;
     private String sessionUrl;
     private double amount;
-    private Long bookingId;
+    private Long booking;
     public PaymentStatus getStatus() {
         return status;
     }
 
-    public Long getBookingId() {
-        return bookingId;
+    public Long getBooking() {
+        return booking;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getSession() {
+        return session;
     }
 
     public String getSessionUrl() {
@@ -36,19 +36,19 @@ public class ResponseBookingPayment {
     public ResponseBookingPayment(ResponseBookingPayment.PaymentResponseBuilder builder) {
         this.status = builder.status;
         this.message = builder.message;
-        this.sessionId = builder.sessionId;
+        this.session = builder.session;
         this.sessionUrl = builder.sessionUrl;
         this.amount = builder.amount;
-        this.bookingId = builder.bookingId;
+        this.booking = builder.booking;
     }
 
     public static class PaymentResponseBuilder {
         private PaymentStatus status;
         private String message;
-        private String sessionId;
+        private String session;
         private String sessionUrl;
         private double amount;
-        private Long bookingId;
+        private Long booking;
 
         public ResponseBookingPayment.PaymentResponseBuilder amount(double amount) {
             this.amount = amount;
@@ -56,7 +56,7 @@ public class ResponseBookingPayment {
         }
 
         public ResponseBookingPayment.PaymentResponseBuilder bookingId(Long bookingId) {
-            this.bookingId = bookingId;
+            this.booking = bookingId;
             return this;
         }
 
@@ -71,7 +71,7 @@ public class ResponseBookingPayment {
         }
 
         public ResponseBookingPayment.PaymentResponseBuilder sessionId(String sessionId) {
-            this.sessionId = sessionId;
+            this.session = sessionId;
             return this;
         }
 

@@ -45,6 +45,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> , JpaSpe
     );
 
     @Modifying
-    @Query("UPDATE Booking b SET b.deleted = true and b.status = :status WHERE b.id = :id")
+    @Query("UPDATE Booking b SET b.deleted = true, b.status = :status WHERE b.id = :id")
     void softDeleteById(@Param("id") Long id, @Param("status") Status status);
 }

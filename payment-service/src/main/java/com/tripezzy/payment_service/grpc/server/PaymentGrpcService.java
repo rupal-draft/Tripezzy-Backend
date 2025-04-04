@@ -54,9 +54,9 @@ public class PaymentGrpcService extends PaymentServiceGrpc.PaymentServiceImplBas
     private com.tripezzy.payment_service.grpc.PaymentsResponse convertToGrpcPayment(PaymentsResponse dto) {
         return com.tripezzy.payment_service.grpc.PaymentsResponse.newBuilder()
                 .setId(dto.getId())
-                .setUserId(dto.getUserId())
-                .setReferenceId(dto.getReferenceId())
-                .setSessionId(dto.getSessionId())
+                .setUserId(dto.getUser())
+                .setReferenceId(dto.getReference())
+                .setSessionId(dto.getSession())
                 .setStatus(dto.getStatus().name())
                 .setAmount(dto.getAmount())
                 .setCurrency(dto.getCurrency())

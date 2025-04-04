@@ -1,10 +1,8 @@
 package com.tripezzy.payment_service.controller;
 
-import com.tripezzy.booking_service.grpc.BookingPaymentResponse;
-import com.tripezzy.eCommerce_service.grpc.CartPaymentResponse;
-import com.tripezzy.payment_service.dto.PaymentsResponse;
-import com.tripezzy.payment_service.dto.ResponseEcomPayment;
-import com.tripezzy.payment_service.dto.ResponseBookingPayment;
+import com.tripezzy.payment_service.annotations.RoleRequired;
+import com.tripezzy.payment_service.dto.*;
+import com.tripezzy.payment_service.entity.enums.PaymentStatus;
 import com.tripezzy.payment_service.grpc.client.BookingGrpcClient;
 import com.tripezzy.payment_service.grpc.client.CartGrpcClient;
 import com.tripezzy.payment_service.service.PaymentService;
@@ -13,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -29,41 +28,60 @@ public class PaymentController {
         this.bookingGrpcClient = bookingGrpcClient;
     }
 
-    @PostMapping("/checkout/{cartId}")
-    @RateLimiter(name = "checkoutProducts", fallbackMethod = "rateLimitFallback")
+    @PostMapping("/checkout/shop/{cartId}")
+    @RateLimiter(name = "checkoutProducts", fallbackMethod = "checkoutProductsFallback")
     public ResponseEntity<ResponseEcomPayment> checkoutProducts(@PathVariable Long cartId,
                                                                 @RequestParam(required = true) Long userId) {
-        CartPaymentResponse paymentDetails = cartGrpcClient.getPaymentDetails(cartId);
-        return ResponseEntity.ok(paymentService.checkoutProducts(paymentDetails,cartId,userId));
+        CartPaymentResponseDto paymentDetails = cartGrpcClient.getPaymentDetails(cartId);
+        return new ResponseEntity<>(paymentService.checkoutProducts(paymentDetails,cartId,userId),HttpStatus.CREATED);
     }
 
-    @PostMapping("/checkout/{bookingId}")
-    @RateLimiter(name = "checkoutBookings", fallbackMethod = "rateLimitFallback")
+    @PostMapping("/checkout/bookings/{bookingId}")
+    @RateLimiter(name = "checkoutBookings", fallbackMethod = "checkoutBookingsFallback")
     public ResponseEntity<ResponseBookingPayment> checkoutBookings(@PathVariable Long bookingId,
                                                                    @RequestParam(required = true) Long userId) {
-        BookingPaymentResponse paymentDetails = bookingGrpcClient.getBookingPayment(bookingId);
-        return ResponseEntity.ok(paymentService.checkoutBooking(paymentDetails,bookingId,userId));
-    }
-
-    @PutMapping("/success")
-    public ResponseEntity<ResponseEcomPayment> confirmPayment(@RequestParam(required = true) String session_id) {
-        return ResponseEntity.ok(paymentService.confirmPayment(session_id));
+        BookingPaymentRequestDto paymentDetails = bookingGrpcClient.getBookingPayment(bookingId);
+        return new ResponseEntity<>(paymentService.checkoutBooking(paymentDetails,bookingId,userId),HttpStatus.CREATED);
     }
 
     @GetMapping
-    @RateLimiter(name = "paymentsRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RoleRequired("ADMIN")
+    @RateLimiter(name = "paymentsRateLimiter", fallbackMethod = "paymentsRateLimiterFallback")
     public ResponseEntity<List<PaymentsResponse>> getAllPayments(){
         return ResponseEntity.ok(paymentService.getAllPayments());
     }
 
     @GetMapping("/user/{userId}")
-    @RateLimiter(name = "userPaymentsRateLimiter", fallbackMethod = "rateLimitFallback")
+    @RoleRequired("ADMIN")
+    @RateLimiter(name = "userPaymentsRateLimiter", fallbackMethod = "userPaymentsRateLimiterFallback")
     public ResponseEntity<List<PaymentsResponse>> getAllPaymentsByUserId(@PathVariable Long userId){
         return ResponseEntity.ok(paymentService.getAllPaymentsByUserId(userId));
     }
 
-    public ResponseEntity<String> rateLimitFallback() {
+    public ResponseEntity<ResponseEcomPayment> checkoutProductsFallback(Long cartId, Long userId, Throwable t) {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                .body("Too many requests. Please try again later.");
+                .body(new ResponseEcomPayment.PaymentResponseBuilder()
+                        .message("Too many checkout requests for products. Please try again in a few moments.")
+                        .status(PaymentStatus.FAILED)
+                        .build());
     }
+
+    public ResponseEntity<ResponseBookingPayment> checkoutBookingsFallback(Long bookingId, Long userId, Throwable t) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(new ResponseBookingPayment.PaymentResponseBuilder()
+                        .message("Too many booking checkout attempts. Please wait and try again shortly.")
+                        .status(PaymentStatus.FAILED)
+                        .build());
+    }
+
+    public ResponseEntity<List<PaymentsResponse>> paymentsRateLimiterFallback(Throwable t) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(Collections.emptyList());
+    }
+
+    public ResponseEntity<List<PaymentsResponse>> userPaymentsRateLimiterFallback(Long userId, Throwable t) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(Collections.emptyList());
+    }
+
 }

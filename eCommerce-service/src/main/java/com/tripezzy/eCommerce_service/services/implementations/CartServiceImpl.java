@@ -139,8 +139,9 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional
     public CartPaymentDto getPaymentDetails(Long cartId) {
-        log.info("Fetching cart for payment for user ID: {}", cartId);
+        log.info("Fetching cart for payment for cart ID: {}", cartId);
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new ResourceNotFound("Cart not found for user ID: " + cartId));
 
