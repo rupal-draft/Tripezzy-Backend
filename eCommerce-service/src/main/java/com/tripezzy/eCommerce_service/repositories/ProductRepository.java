@@ -26,4 +26,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "LOWER(p.description) LIKE LOWER(CONCAT('%', :query, '%')) AND " +
             "p.deleted = false")
     Page<Product> searchProducts(@Param("query") String query, Pageable pageable);
+
+    Page<Product> findAllByDeletedFalse(Pageable pageable);
 }
