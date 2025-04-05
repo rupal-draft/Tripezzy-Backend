@@ -6,7 +6,6 @@ import com.tripezzy.user_service.entity.Seller;
 import com.tripezzy.user_service.entity.User;
 import com.tripezzy.user_service.entity.enums.UserRole;
 import com.tripezzy.user_service.exceptions.*;
-import com.tripezzy.user_service.exceptions.ResourceConflictException;
 import com.tripezzy.user_service.repository.UserRepository;
 import com.tripezzy.user_service.security.JwtService;
 import com.tripezzy.user_service.service.AuthService;

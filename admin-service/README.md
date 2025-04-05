@@ -111,6 +111,8 @@ The service uses the following entities, which translate to database schemas:
 | `GET`  | `/core/products`                 | Retrieves all products from the Product Service (paginated).                                                                                                                                       |
 | `GET`  | `/core/payments`                 | Retrieves all payments from the Payment Service.                                                                                                                                                     |
 | `GET`  | `/core/payments/{userId}`         | Retrieves all payments by user ID from the Payment Service.                                                                                                                                         |
+| `PATCH` | `/core/bookings/{bookingId}/update/status` | Updates status of a booking in the Booking Service. |
+| `PATCH` | `/core/bookings/{bookingId}/update/payment-status` | Updates payment status of a booking in the Booking Service. |
 
 ## Configuration
 

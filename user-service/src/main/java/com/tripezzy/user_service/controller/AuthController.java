@@ -22,14 +22,14 @@ public class AuthController {
     }
 
     @PostMapping(path = "/register")
-    @RateLimiter(name = "signupLimiter", fallbackMethod = "rateLimitFallback")
+    @RateLimiter(name = "signupLimiter", fallbackMethod = "rateLimitFallbackSignup")
     public ResponseEntity<UserDto> signup(@RequestBody UserRegisterDto signupDto){
         UserDto user = authService.signup(signupDto);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/login")
-    @RateLimiter(name = "loginLimiter", fallbackMethod = "rateLimitFallback")
+    @RateLimiter(name = "loginLimiter", fallbackMethod = "rateLimitFallbackLogin")
     public ResponseEntity<UserLoginResponseDto> login(@RequestBody UserLoginDto loginDto){
         UserLoginResponseDto loginResponse = authService.login(loginDto);
         return ResponseEntity.ok(loginResponse);
@@ -37,7 +37,7 @@ public class AuthController {
 
     @PostMapping(path = "/onboard/seller")
     @RoleRequired("ADMIN")
-    @RateLimiter(name = "sellerOnboardLimiter", fallbackMethod = "rateLimitFallback")
+    @RateLimiter(name = "sellerOnboardLimiter", fallbackMethod = "rateLimitFallbackSeller")
     public ResponseEntity<UserDto> onboardSeller(@RequestBody OnboardSellerDto onboardSellerDto){
         UserDto seller = authService.onboardSeller(onboardSellerDto);
         return new ResponseEntity<>(seller, HttpStatus.CREATED);
@@ -45,7 +45,7 @@ public class AuthController {
 
     @PostMapping(path = "/onboard/guide")
     @RoleRequired("ADMIN")
-    @RateLimiter(name = "guideOnboardLimiter", fallbackMethod = "rateLimitFallback")
+    @RateLimiter(name = "guideOnboardLimiter", fallbackMethod = "rateLimitFallbackGuide")
     public ResponseEntity<UserDto> onboardGuide(@RequestBody OnboardGuideDto onboardGuideDto){
         UserDto guide = authService.onboardGuide(onboardGuideDto);
         return new ResponseEntity<>(guide, HttpStatus.CREATED);

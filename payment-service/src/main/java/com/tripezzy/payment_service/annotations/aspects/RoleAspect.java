@@ -4,7 +4,7 @@ package com.tripezzy.payment_service.annotations.aspects;
 import com.tripezzy.payment_service.annotations.RoleRequired;
 import com.tripezzy.payment_service.auth.UserContext;
 import com.tripezzy.payment_service.auth.UserContextHolder;
-import com.tripezzy.payment_service.exception.AccessForbidden;
+import com.tripezzy.payment_service.exceptions.AccessForbidden;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
