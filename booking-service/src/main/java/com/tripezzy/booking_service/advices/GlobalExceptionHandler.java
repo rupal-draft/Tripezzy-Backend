@@ -1,9 +1,6 @@
 package com.tripezzy.booking_service.advices;
 
-import com.tripezzy.booking_service.exceptions.AccessForbidden;
-import com.tripezzy.booking_service.exceptions.IllegalState;
-import com.tripezzy.booking_service.exceptions.ResourceNotFound;
-import com.tripezzy.booking_service.exceptions.RuntimeConflict;
+import com.tripezzy.booking_service.exceptions.*;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +31,26 @@ public class GlobalExceptionHandler {
         logger.error("Runtime conflict: {}", exception.getMessage());
         ApiError apiError = new ApiError.ApiErrorBuilder()
                 .setStatus(HttpStatus.CONFLICT)
+                .setMessage(exception.getLocalizedMessage())
+                .build();
+        return buildErrorResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(ServiceUnavailable.class)
+    public ResponseEntity<ApiResponse<?>> handleServiceUnavailableException(ServiceUnavailable exception) {
+        logger.error("Service unavailable: {}", exception.getMessage());
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .setStatus(HttpStatus.SERVICE_UNAVAILABLE)
+                .setMessage(exception.getLocalizedMessage())
+                .build();
+        return buildErrorResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiResponse<?>> handleBadRequestException(BadRequestException exception) {
+        logger.error("Bad request: {}", exception.getMessage());
+        ApiError apiError = new ApiError.ApiErrorBuilder()
+                .setStatus(HttpStatus.BAD_REQUEST)
                 .setMessage(exception.getLocalizedMessage())
                 .build();
         return buildErrorResponseEntity(apiError);
