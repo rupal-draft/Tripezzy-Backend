@@ -1,9 +1,9 @@
 package com.tripezzy.booking_service.advices;
 
-import com.tripezzy.booking_service.exception.AccessForbidden;
-import com.tripezzy.booking_service.exception.IllegalState;
-import com.tripezzy.booking_service.exception.ResourceNotFound;
-import com.tripezzy.booking_service.exception.RuntimeConflict;
+import com.tripezzy.booking_service.exceptions.AccessForbidden;
+import com.tripezzy.booking_service.exceptions.IllegalState;
+import com.tripezzy.booking_service.exceptions.ResourceNotFound;
+import com.tripezzy.booking_service.exceptions.RuntimeConflict;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -203,7 +203,52 @@ public class BookingGrpcClient {
         }
     }
 
-    // Helper methods
+    @CacheEvict(value = {"allBookings", "bookingsByUserId", "bookingsByStatus"}, allEntries = true)
+    public BookingDto updateBookingStatus(Long bookingId, String status) {
+        if (bookingId == null || bookingId <= 0) {
+            throw new BadRequestException("Invalid booking ID");
+        }
+        if (status == null || status.isBlank()) {
+            throw new BadRequestException("Status cannot be empty");
+        }
+
+        try {
+            UpdateStatusRequest request = UpdateStatusRequest.newBuilder()
+                    .setBookingId(bookingId)
+                    .setStatus(status)
+                    .build();
+
+            BookingResponseSingle response = bookingStub.updateBookingStatus(request);
+            return mapBooking(response.getBooking());
+        } catch (StatusRuntimeException e) {
+            handleGrpcException(e, "Failed to update booking status");
+            throw new ServiceUnavailable("Failed to update booking status. Please try again later");
+        }
+    }
+
+    @CacheEvict(value = {"allBookings", "bookingsByUserId", "bookingsByStatus"}, allEntries = true)
+    public BookingDto updateBookingPaymentStatus(Long bookingId, String paymentStatus) {
+        if (bookingId == null || bookingId <= 0) {
+            throw new BadRequestException("Invalid booking ID");
+        }
+        if (paymentStatus == null || paymentStatus.isBlank()) {
+            throw new BadRequestException("Payment status cannot be empty");
+        }
+
+        try {
+            UpdateStatusRequest request = UpdateStatusRequest.newBuilder()
+                    .setBookingId(bookingId)
+                    .setStatus(paymentStatus)
+                    .build();
+
+            BookingResponseSingle response = bookingStub.updateBookingPaymentStatus(request);
+            return mapBooking(response.getBooking());
+        } catch (StatusRuntimeException e) {
+            handleGrpcException(e, "Failed to update booking payment status");
+            throw new ServiceUnavailable("Failed to update booking payment status. Please try again later");
+        }
+    }
+
     private List<BookingDto> mapBookingResponse(BookingResponse response) {
         return response.getBookingsList().stream()
                 .map(this::mapBooking)

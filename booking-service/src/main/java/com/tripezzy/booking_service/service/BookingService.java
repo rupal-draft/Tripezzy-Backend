@@ -39,4 +39,8 @@ public interface BookingService {
     BookingDto confirmBooking(Long bookingId);
 
     BookingPaymentDto getBookingPayment(Long bookingId);
+
+    BookingDto updateBookingStatus(Long bookingId, String status);
+
+    BookingDto updatePaymentStatus(Long bookingId, String paymentStatus);
 }

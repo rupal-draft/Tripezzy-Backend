@@ -4,7 +4,7 @@ package com.tripezzy.booking_service.annotations.aspects;
 import com.tripezzy.booking_service.annotations.RoleRequired;
 import com.tripezzy.booking_service.auth.UserContext;
 import com.tripezzy.booking_service.auth.UserContextHolder;
-import com.tripezzy.booking_service.exception.AccessForbidden;
+import com.tripezzy.booking_service.exceptions.AccessForbidden;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;

@@ -117,6 +117,28 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(Collections.emptyList());
     }
 
+    @PatchMapping("/bookings/{bookingId}/update/status")
+    @RoleRequired("ADMIN")
+    @RateLimiter(name = "adminBookingUpdateStatusLimiter", fallbackMethod = "bookingUpdateStatusRateLimitFallback")
+    public ResponseEntity<BookingDto> updateBookingStatus(@PathVariable Long bookingId, @RequestParam String status) {
+        return ResponseEntity.ok(bookingGrpcClient.updateBookingStatus(bookingId, status));
+    }
+
+    public ResponseEntity<BookingDto> bookingUpdateStatusRateLimitFallback(Long bookingId, String status, Throwable t) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null);
+    }
+
+    @PatchMapping("/bookings/{bookingId}/update/payment-status")
+    @RoleRequired("ADMIN")
+    @RateLimiter(name = "adminBookingUpdatePaymentStatusLimiter", fallbackMethod = "bookingUpdatePaymentStatusRateLimitFallback")
+    public ResponseEntity<BookingDto> updateBookingPaymentStatus(@PathVariable Long bookingId, @RequestParam String paymentStatus) {
+        return ResponseEntity.ok(bookingGrpcClient.updateBookingPaymentStatus(bookingId, paymentStatus));
+    }
+
+    public ResponseEntity<BookingDto> bookingUpdatePaymentStatusRateLimitFallback(Long bookingId, String paymentStatus, Throwable t) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null);
+    }
+
     @GetMapping("/bookings/status")
     @RoleRequired("ADMIN")
     @RateLimiter(name = "adminBookingsByStatusLimiter", fallbackMethod = "bookingsByStatusRateLimitFallback")
