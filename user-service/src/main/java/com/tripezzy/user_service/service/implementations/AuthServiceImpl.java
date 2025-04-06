@@ -18,6 +18,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -190,6 +193,65 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalState("Failed to map guide data");
         }
     }
+
+    @Override
+    public List<UserDto> getAllUsers() {
+        return getUsersByRole(UserRole.USER);
+    }
+
+    @Override
+    public List<UserDto> getAllAdminUsers() {
+        return getUsersByRole(UserRole.ADMIN);
+    }
+
+    @Override
+    public List<UserDto> getAllSellerUsers() {
+        return getUsersByRole(UserRole.SELLER);
+    }
+
+    @Override
+    public List<UserDto> getAllGuideUsers() {
+        return getUsersByRole(UserRole.GUIDE);
+    }
+
+    @Override
+    public UserDto getUserById(Long id) {
+        try {
+            log.info("Fetching user with ID: {}", id);
+            User user = userRepository
+                    .findById(id)
+                    .orElseThrow(() -> new ResourceNotFound("User not found with ID: " + id));
+            log.info("User found: {}", user);
+            return modelMapper.map(user, UserDto.class);
+        } catch (DataAccessException ex) {
+            log.error("Database error while fetching user with ID: {}", id, ex);
+            throw new ServiceUnavailable("Unable to retrieve user at this time");
+        } catch (MappingException ex) {
+            log.error("Mapping error while fetching user with ID: {}", id, ex);
+            throw new IllegalState("Mapping failure occurred");
+        }
+    }
+
+    private List<UserDto> getUsersByRole(UserRole role) {
+        try {
+            log.info("Fetching all users with role: {}", role);
+
+            List<User> users = userRepository.findByRole(role);
+
+            return users.stream()
+                    .map(user -> modelMapper.map(user, UserDto.class))
+                    .collect(Collectors.toUnmodifiableList());
+
+        } catch (MappingException ex) {
+            log.error("Mapping failure during {} user conversion", role, ex);
+            throw new IllegalStateException("Mapping failure occurred");
+
+        } catch (DataAccessException ex) {
+            log.error("Database error while fetching users with role: {}", role, ex);
+            throw new ServiceUnavailable("Unable to retrieve users at this time");
+        }
+    }
+
 
     private <T> User createUserWithProfile(T profileDto, UserRole role) {
         try {

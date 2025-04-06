@@ -15,6 +15,7 @@
         <module name="user-service" />
         <module name="blog-service" />
         <module name="admin-service" />
+        <module name="notification-service" />
       </profile>
     </annotationProcessing>
   </component>
@@ -26,6 +27,7 @@
       <module name="booking-service" options="-parameters" />
       <module name="discovery-server" options="-parameters" />
       <module name="eCommerce-service" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
       <module name="payment-service" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>

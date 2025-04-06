@@ -7,6 +7,9 @@ import com.tripezzy.booking_service.dto.BookingPaymentDto;
 import com.tripezzy.booking_service.entity.Booking;
 import com.tripezzy.booking_service.entity.enums.PaymentStatus;
 import com.tripezzy.booking_service.entity.enums.Status;
+import com.tripezzy.booking_service.events.BookingConfirmedEvent;
+import com.tripezzy.booking_service.events.BookingCreatedEvent;
+import com.tripezzy.booking_service.events.BookingStatusUpdatedEvent;
 import com.tripezzy.booking_service.exceptions.*;
 import com.tripezzy.booking_service.repository.BookingRepository;
 import com.tripezzy.booking_service.service.BookingService;
@@ -20,9 +23,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.kafka.KafkaException;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,10 +39,19 @@ public class BookingServiceImpl implements BookingService {
     private static final Logger log = LoggerFactory.getLogger(BookingServiceImpl.class);
     private final ModelMapper modelMapper;
     private final BookingRepository bookingRepository;
+    private final KafkaTemplate<Long, BookingCreatedEvent> kafkaBookingCreatedTemplate;
+    private final KafkaTemplate<Long, BookingStatusUpdatedEvent> bookingStatusUpdatedKafkaTemplate;
+    private final KafkaTemplate<Long, BookingConfirmedEvent> bookingConfirmedKafkaTemplate;
 
-    public BookingServiceImpl(ModelMapper modelMapper, BookingRepository bookingRepository) {
+    public BookingServiceImpl(ModelMapper modelMapper,
+                              BookingRepository bookingRepository, KafkaTemplate<Long, BookingCreatedEvent> kafkaTemplate,
+                              KafkaTemplate<Long, BookingStatusUpdatedEvent> bookingStatusUpdatedEventKafkaTemplate,
+                              KafkaTemplate<Long, BookingConfirmedEvent> bookingConfirmedKafkaTemplate) {
         this.modelMapper = modelMapper;
         this.bookingRepository = bookingRepository;
+        this.kafkaBookingCreatedTemplate = kafkaTemplate;
+        this.bookingStatusUpdatedKafkaTemplate = bookingStatusUpdatedEventKafkaTemplate;
+        this.bookingConfirmedKafkaTemplate = bookingConfirmedKafkaTemplate;
     }
 
     @Override
@@ -69,6 +82,27 @@ public class BookingServiceImpl implements BookingService {
             booking.setStatus(Status.PENDING);
 
             Booking savedBooking = bookingRepository.save(booking);
+
+            try {
+                log.info("Sending booking to Kafka with ID: {}", savedBooking.getId());
+
+                BookingCreatedEvent event = new BookingCreatedEvent();
+                event.setUser(userContext.getUserId());
+                event.setDestination(destinationId);
+                event.setBookingDate(savedBooking.getBookingDate().toString());
+                event.setTravelDate(savedBooking.getTravelDate().toString());
+                event.setTotalPrice(savedBooking.getTotalPrice());
+                event.setBooking(savedBooking.getId());
+
+                kafkaBookingCreatedTemplate.send("new-booking", savedBooking.getId(), event);
+
+                log.info("Booking sent to Kafka with ID: {}", savedBooking.getId());
+            } catch (KafkaException ex) {
+                log.error("Kafka error while creating booking", ex);
+                throw new KafkaException("Failed to send booking to Kafka");
+            }
+
+
             log.info("Booking created successfully with ID: {}", savedBooking.getId());
 
             return modelMapper.map(savedBooking, BookingDto.class);
@@ -228,13 +262,17 @@ public class BookingServiceImpl implements BookingService {
             Booking booking = bookingRepository.findById(bookingId)
                     .orElseThrow(() -> new ResourceNotFound("Booking not found with ID: " + bookingId));
 
-            if (!booking.getStatus().equals(Status.PENDING)) {
-                throw new IllegalState("Only pending bookings can be confirmed");
-            }
-
             booking.setStatus(Status.CONFIRMED);
             booking.setPaymentStatus(PaymentStatus.PAID);
             Booking updatedBooking = bookingRepository.save(booking);
+
+            log.info("Sending booking confirmed event for booking ID: {}", bookingId);
+            BookingConfirmedEvent bookingConfirmedEvent = new BookingConfirmedEvent();
+            bookingConfirmedEvent.setBooking(updatedBooking.getId());
+            bookingConfirmedEvent.setUser(updatedBooking.getUser());
+
+            bookingConfirmedKafkaTemplate.send("booking-confirmed", booking.getId(), bookingConfirmedEvent);
+            log.trace("Booking confirmed event sent for booking ID: {}", bookingId);
 
             log.info("Booking confirmed successfully with ID: {}", bookingId);
             return modelMapper.map(updatedBooking, BookingDto.class);
@@ -242,6 +280,9 @@ public class BookingServiceImpl implements BookingService {
         } catch (DataAccessException ex) {
             log.error("Database error while confirming booking ID {}", bookingId, ex);
             throw new DataIntegrityViolation("Failed to confirm booking due to database error");
+        } catch (KafkaException ex) {
+            log.error("Kafka error while confirming booking ID {}", bookingId, ex);
+            throw new KafkaException("Failed to confirm booking due to Kafka error");
         }
     }
 
@@ -579,6 +620,21 @@ public class BookingServiceImpl implements BookingService {
 
             booking.setStatus(statusEnum);
             Booking updatedBooking = bookingRepository.save(booking);
+
+            try {
+                log.info("Sending Kafka event for booking status update");
+                BookingStatusUpdatedEvent event = new BookingStatusUpdatedEvent();
+                event.setBooking(bookingId);
+                event.setStatus(String.valueOf(booking.getStatus()));
+                event.setUser(booking.getUser());
+
+                bookingStatusUpdatedKafkaTemplate.send("update-booking-status", updatedBooking.getId(), event);
+
+                log.info("Kafka event sent for booking status update");
+            } catch (KafkaException ex) {
+                log.error("Failed to send Kafka event for booking status update", ex);
+                throw new KafkaException("Failed to send Kafka event for booking status update");
+            }
 
             log.info("Booking status updated successfully for ID: {}", bookingId);
             return modelMapper.map(updatedBooking, BookingDto.class);
