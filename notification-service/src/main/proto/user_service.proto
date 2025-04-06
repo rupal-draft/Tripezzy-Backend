@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package user;
+import "google/protobuf/empty.proto";
+option java_multiple_files = true;
+option java_package = "com.tripezzy.grpc.user";
+option java_outer_classname = "UserProto";
+
+message UserDto {
+    int64 id = 1;
+    string firstName = 2;
+    string lastName = 3;
+    string email = 4;
+    string phoneNumber = 5;
+    string role = 6;
+}
+
+message UserIdRequest {
+    int64 id = 1;
+}
+
+message UserListResponse {
+    repeated UserDto users = 1;
+}
+
+message SingleUserResponse {
+    UserDto user = 1;
+}
+
+service UserService {
+    rpc GetAllUsers(google.protobuf.Empty) returns (UserListResponse);
+    rpc GetAllAdminUsers(google.protobuf.Empty) returns (UserListResponse);
+    rpc GetAllSellerUsers(google.protobuf.Empty) returns (UserListResponse);
+    rpc GetAllGuideUsers(google.protobuf.Empty) returns (UserListResponse);
+    rpc GetUserById(UserIdRequest) returns (UserDto);
+}
