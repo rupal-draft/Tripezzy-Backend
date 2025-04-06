@@ -46,9 +46,9 @@ public class BookingServiceConsumer {
                 log.info("Sending notification to admin: {}", admin.getFirstName());
                 String message = String.format("New booking received with ID: %s", event.getBooking());
                 sendNotification(admin, message);
-                log.trace("Notification sent to admin: {}", admin.getFirstName());
+                log.info("Notification sent to admin: {}", admin.getFirstName());
             }
-            log.trace("Notification sent to all admins");
+            log.info("Notification sent to all admins");
         } catch (DataAccessException | TransactionSystemException ex) {
             log.error("Database error while saving notification: {}", ex.getMessage(), ex);
             throw new ServiceException("Notification saving failed", ex);

@@ -29,7 +29,7 @@ public class BlogController {
     }
 
     @PostMapping
-    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "createBlogRateLimitFallback")
+//    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "createBlogRateLimitFallback")
     public ResponseEntity<BlogResponseDto> createBlog(@RequestBody BlogDto blogDto) {
         BlogResponseDto savedBlog = blogService.createBlog(blogDto);
         return new ResponseEntity<>(savedBlog, HttpStatus.CREATED);
@@ -123,7 +123,7 @@ public class BlogController {
     }
 
     @PostMapping("/{blogId}/likes")
-    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "addLikeToBlogRateLimitFallback")
+//    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "addLikeToBlogRateLimitFallback")
     public ResponseEntity<ApiResponse<String>> addLikeToBlog(
             @PathVariable Long blogId) {
         blogService.addLikeToBlog(blogId);
@@ -140,7 +140,7 @@ public class BlogController {
     }
 
     @PostMapping("/{blogId}/comments")
-    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "addCommentToBlogRateLimitFallback")
+//    @RateLimiter(name = "blogRateLimiter", fallbackMethod = "addCommentToBlogRateLimitFallback")
     public ResponseEntity<CommentDto> addCommentToBlog(
             @PathVariable Long blogId,
             @RequestBody CommentDto commentDto) {

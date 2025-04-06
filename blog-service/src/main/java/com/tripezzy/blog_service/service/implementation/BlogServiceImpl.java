@@ -9,6 +9,9 @@ import com.tripezzy.blog_service.entity.Blog;
 import com.tripezzy.blog_service.entity.Comment;
 import com.tripezzy.blog_service.entity.Like;
 import com.tripezzy.blog_service.entity.enums.BlogStatus;
+import com.tripezzy.blog_service.events.BlogCommentedEvent;
+import com.tripezzy.blog_service.events.BlogCreatedEvent;
+import com.tripezzy.blog_service.events.BlogLikedEvent;
 import com.tripezzy.blog_service.exceptions.*;
 import com.tripezzy.blog_service.repository.BlogRepository;
 import com.tripezzy.blog_service.repository.CommentRepository;
@@ -23,6 +26,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.KafkaException;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,15 +43,24 @@ public class BlogServiceImpl implements BlogService {
     private final CommentRepository commentRepository;
     private final ModelMapper modelMapper;
 
-    public BlogServiceImpl(
-            BlogRepository blogRepository,
-            LikeRepository likeRepository,
-            CommentRepository commentRepository,
-            ModelMapper modelMapper) {
+    private final KafkaTemplate<Long, BlogCreatedEvent> kafkaBlogCreatedTemplate;
+    private final KafkaTemplate<Long, BlogLikedEvent> kafkaBlogLikedTemplate;
+    private final KafkaTemplate<Long, BlogCommentedEvent> kafkaBlogCommentedTemplate;
+
+    public BlogServiceImpl(BlogRepository blogRepository,
+                           LikeRepository likeRepository,
+                           CommentRepository commentRepository,
+                           ModelMapper modelMapper,
+                           KafkaTemplate<Long, BlogCreatedEvent> kafkaBlogCreatedTemplate,
+                           KafkaTemplate<Long, BlogLikedEvent> kafkaBlogLikedTemplate,
+                           KafkaTemplate<Long, BlogCommentedEvent> kafkaBlogCommentedTemplate) {
         this.blogRepository = blogRepository;
         this.likeRepository = likeRepository;
         this.commentRepository = commentRepository;
         this.modelMapper = modelMapper;
+        this.kafkaBlogCreatedTemplate = kafkaBlogCreatedTemplate;
+        this.kafkaBlogLikedTemplate = kafkaBlogLikedTemplate;
+        this.kafkaBlogCommentedTemplate = kafkaBlogCommentedTemplate;
     }
 
     @Override
@@ -74,6 +88,11 @@ public class BlogServiceImpl implements BlogService {
             Blog savedBlog = blogRepository.save(blog);
             log.info("Blog created successfully with ID: {}", savedBlog.getId());
 
+            log.info("Sending blog created event");
+            BlogCreatedEvent blogCreatedEvent = new BlogCreatedEvent(savedBlog.getId(), savedBlog.getTitle(), savedBlog.getAuthorId());
+            kafkaBlogCreatedTemplate.send("new-blog", savedBlog.getId(), blogCreatedEvent);
+            log.info("Blog created event sent");
+
             return modelMapper.map(savedBlog, BlogResponseDto.class);
 
         } catch (DataAccessException ex) {
@@ -82,6 +101,9 @@ public class BlogServiceImpl implements BlogService {
         } catch (MappingException ex) {
             log.error("Mapping error while creating blog", ex);
             throw new IllegalState("Failed to map blog data");
+        } catch (KafkaException ex) {
+            log.error("Kafka error while sending blog created event", ex);
+            throw new KafkaException("Failed to send blog created event");
         }
     }
 
@@ -239,9 +261,17 @@ public class BlogServiceImpl implements BlogService {
             Like savedLike = likeRepository.save(like);
             log.info("Like added successfully with ID: {}", savedLike.getId());
 
+            log.info("Sending blog liked event");
+            BlogLikedEvent blogLikedEvent = new BlogLikedEvent(blogId, userId);
+            kafkaBlogLikedTemplate.send("blog-liked", blogId, blogLikedEvent);
+            log.info("Blog liked event sent");
+
         } catch (DataAccessException ex) {
             log.error("Database error while adding like to blog ID {}", blogId, ex);
             throw new DataIntegrityViolation("Failed to add like due to database error");
+        } catch (KafkaException ex) {
+            log.error("Kafka error while adding like to blog ID {}", blogId, ex);
+            throw new KafkaException("Failed to add like due to Kafka error");
         }
     }
 
@@ -485,6 +515,11 @@ public class BlogServiceImpl implements BlogService {
             Comment savedComment = commentRepository.save(comment);
             log.info("Comment added successfully with ID: {}", savedComment.getId());
 
+            log.info("Sending blog commented event");
+            BlogCommentedEvent blogCommentedEvent = new BlogCommentedEvent(blogId, userContext.getUserId(), savedComment.getId());
+            kafkaBlogCommentedTemplate.send("blog-commented", savedComment.getId() ,blogCommentedEvent);
+            log.info("Blog commented event sent");
+
             return modelMapper.map(savedComment, CommentDto.class);
 
         } catch (DataAccessException ex) {
@@ -493,6 +528,9 @@ public class BlogServiceImpl implements BlogService {
         } catch (MappingException ex) {
             log.error("Mapping error while adding comment", ex);
             throw new IllegalState("Failed to map comment data");
+        } catch (KafkaException ex) {
+            log.error("Kafka error while sending blog commented event", ex);
+            throw new KafkaException("Failed to send blog commented event");
         }
     }
 
