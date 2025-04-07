@@ -40,7 +40,6 @@ public class ProductGrpcClient {
                     .usePlaintext()
                     .build();
             productStub = ProductServiceGrpc.newBlockingStub(channel);
-            checkServiceHealth();
         } catch (Exception e) {
             log.error("Failed to initialize gRPC product client", e);
             throw new ServiceUnavailable("Product service is currently unavailable");
@@ -67,6 +66,7 @@ public class ProductGrpcClient {
 
     @Cacheable(value = "products", key = "'products-' + #page + '-' + #size")
     public List<ProductResponseDto> getAllProducts(int page, int size) {
+        checkServiceHealth();
         validatePaginationParams(page, size);
         log.info("Fetching all products - page: {}, size: {}", page, size);
         try{

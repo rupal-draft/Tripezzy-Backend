@@ -33,7 +33,6 @@ public class BookingGrpcClient {
                 .usePlaintext()
                 .build();
         this.bookingStub = BookingServiceGrpc.newBlockingStub(channel);
-        checkServiceHealth();
     }
 
     private void checkServiceHealth() {
@@ -64,6 +63,7 @@ public class BookingGrpcClient {
     }
 
     public BookingPaymentRequestDto getBookingPayment(Long bookingId) {
+        checkServiceHealth();
         try {
             log.info("Fetching booking payment details for booking ID: {}", bookingId);
 

@@ -39,7 +39,6 @@ public class UserGrpcClient {
                 .usePlaintext()
                 .build();
         this.userStub = UserServiceGrpc.newBlockingStub(channel);
-        checkServiceHealth();
     }
 
     private void checkServiceHealth() {
@@ -88,6 +87,7 @@ public class UserGrpcClient {
     }
 
     private List<UserDto> getUserList(Supplier<UserListResponse> grpcCall, String context) {
+        checkServiceHealth();
         log.info("Getting user list for {}", context);
         try {
             UserListResponse response = grpcCall.get();
@@ -119,6 +119,7 @@ public class UserGrpcClient {
     }
 
     public UserDto getUserById(Long userId) {
+        checkServiceHealth();
         log.info("Getting user by ID: {}", userId);
         try {
 

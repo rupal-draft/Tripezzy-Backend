@@ -36,7 +36,6 @@ public class PaymentGrpcClient {
                     .build();
 
             this.paymentStub = PaymentServiceGrpc.newBlockingStub(channel);
-            checkServiceHealth();
         } catch (Exception e) {
             log.error("Failed to initialize gRPC payment client", e);
             throw new ServiceUnavailable("Payment service is currently unavailable");
@@ -62,6 +61,7 @@ public class PaymentGrpcClient {
 
     @Cacheable(value = "payments", key = "'allPayments'")
     public List<PaymentsResponseDto> getAllPayments() {
+        checkServiceHealth();
         try {
             EmptyRequest request = EmptyRequest.newBuilder().build();
             PaymentsResponseList responseList = paymentStub.getAllPayments(request);
@@ -80,6 +80,7 @@ public class PaymentGrpcClient {
 
     @Cacheable(value = "paymentsByUserId", key = "'paymentsByUserId-' + #userId")
     public List<PaymentsResponseDto> getAllPaymentsByUserId(Long userId) {
+        checkServiceHealth();
         if (userId == null || userId <= 0) {
             throw new BadRequestException("Invalid user ID");
         }

@@ -37,7 +37,6 @@ public class BookingGrpcClient {
                     .build();
 
             this.bookingStub = BookingServiceGrpc.newBlockingStub(channel);
-            checkServiceHealth();
         } catch (Exception e) {
             log.error("Failed to initialize gRPC client", e);
             throw new ServiceUnavailable("Booking service is currently unavailable");
@@ -63,6 +62,7 @@ public class BookingGrpcClient {
 
     @Cacheable(value = "allBookings", key = "'bookings-' + #page + '-' + #size")
     public List<BookingDto> getAllBookings(int page, int size) {
+        checkServiceHealth();
         validatePaginationParams(page, size);
 
         try {
@@ -81,6 +81,7 @@ public class BookingGrpcClient {
 
     @Cacheable(value = "bookingsByUserId", key = "'bookingsByUserId-' + #userId + '-' + #page + '-' + #size")
     public List<BookingDto> getBookingsByUserId(Long userId, int page, int size) {
+        checkServiceHealth();
         validatePaginationParams(page, size);
         if (userId == null || userId <= 0) {
             throw new BadRequestException("Invalid user ID");
@@ -103,6 +104,7 @@ public class BookingGrpcClient {
 
     @Cacheable(value = "bookingsByDestinationId", key = "'bookingsByDestinationId-' + #destinationId + '-' + #page + '-' + #size")
     public List<BookingDto> getBookingsByDestinationId(Long destinationId, int page, int size) {
+        checkServiceHealth();
         validatePaginationParams(page, size);
         if (destinationId == null || destinationId <= 0) {
             throw new BadRequestException("Invalid destination ID");
@@ -126,6 +128,7 @@ public class BookingGrpcClient {
     @CacheEvict(value = {"allBookings", "bookingsByUserId", "bookingsByDestinationId",
             "bookingsByPaymentStatus", "bookingsByStatus"}, allEntries = true)
     public boolean softDeleteBooking(Long bookingId) {
+        checkServiceHealth();
         if (bookingId == null || bookingId <= 0) {
             throw new BadRequestException("Invalid booking ID");
         }
@@ -145,6 +148,7 @@ public class BookingGrpcClient {
 
     @Cacheable(value = "bookingsByPaymentStatus", key = "'bookingsByPaymentStatus-' + #paymentStatus")
     public List<BookingDto> getBookingsByPaymentStatus(String paymentStatus) {
+        checkServiceHealth();
         if (paymentStatus == null || paymentStatus.isBlank()) {
             throw new BadRequestException("Payment status cannot be empty");
         }
@@ -164,6 +168,7 @@ public class BookingGrpcClient {
 
     @Cacheable(value = "bookingsByStatus", key = "'bookingsByStatus-' + #status + '-' + #page + '-' + #size")
     public List<BookingDto> getBookingsByStatus(String status, int page, int size) {
+        checkServiceHealth();
         validatePaginationParams(page, size);
         if (status == null || status.isBlank()) {
             throw new BadRequestException("Status cannot be empty");
@@ -186,6 +191,7 @@ public class BookingGrpcClient {
 
     @CacheEvict(value = {"allBookings", "bookingsByUserId", "bookingsByStatus"}, allEntries = true)
     public BookingDto confirmBooking(Long bookingId) {
+        checkServiceHealth();
         if (bookingId == null || bookingId <= 0) {
             throw new BadRequestException("Invalid booking ID");
         }
@@ -205,6 +211,7 @@ public class BookingGrpcClient {
 
     @CacheEvict(value = {"allBookings", "bookingsByUserId", "bookingsByStatus"}, allEntries = true)
     public BookingDto updateBookingStatus(Long bookingId, String status) {
+        checkServiceHealth();
         if (bookingId == null || bookingId <= 0) {
             throw new BadRequestException("Invalid booking ID");
         }
@@ -228,6 +235,7 @@ public class BookingGrpcClient {
 
     @CacheEvict(value = {"allBookings", "bookingsByUserId", "bookingsByStatus"}, allEntries = true)
     public BookingDto updateBookingPaymentStatus(Long bookingId, String paymentStatus) {
+        checkServiceHealth();
         if (bookingId == null || bookingId <= 0) {
             throw new BadRequestException("Invalid booking ID");
         }

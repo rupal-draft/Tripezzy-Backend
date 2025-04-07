@@ -39,7 +39,6 @@ public class BlogGrpcClient {
                     .build();
 
             this.blogStub = BlogServiceGrpc.newBlockingStub(channel);
-            checkServiceHealth();
         } catch (Exception e) {
             log.error("Failed to initialize gRPC blog client", e);
             throw new ServiceUnavailable("Blog service is currently unavailable");
@@ -65,6 +64,7 @@ public class BlogGrpcClient {
 
     @Cacheable(value = "blogs", key = "#page + '-' + #size")
     public List<BlogResponseDto> getAllBlogs(int page, int size) {
+        checkServiceHealth();
         validatePaginationParams(page, size);
         log.info("Fetching all blogs - page: {}, size: {}", page, size);
 

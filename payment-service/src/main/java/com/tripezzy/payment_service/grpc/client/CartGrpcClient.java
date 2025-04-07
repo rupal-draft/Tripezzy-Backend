@@ -33,7 +33,6 @@ public class CartGrpcClient {
                 .usePlaintext()
                 .build();
         this.cartStub = CartServiceGrpc.newBlockingStub(channel);
-        checkServiceHealth();
     }
 
     private void checkServiceHealth() {
@@ -64,6 +63,7 @@ public class CartGrpcClient {
     }
 
     public CartPaymentResponseDto getPaymentDetails(Long cartId) {
+        checkServiceHealth();
         try {
             log.info("Fetching cart payment details for cart ID: {}", cartId);
 
