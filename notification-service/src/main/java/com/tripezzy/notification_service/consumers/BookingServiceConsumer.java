@@ -8,6 +8,7 @@ import com.tripezzy.notification_service.dto.UserDto;
 import com.tripezzy.notification_service.entity.Notification;
 import com.tripezzy.notification_service.grpc.UserGrpcClient;
 import com.tripezzy.notification_service.repository.NotificationRepository;
+import com.tripezzy.notification_service.utils.NotificationUtil;
 import org.apache.kafka.shaded.com.google.protobuf.ServiceException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -29,10 +30,12 @@ public class BookingServiceConsumer {
     private static final String CONFIRMED_BOOKING_TOPIC = "booking-confirmed";
     private final UserGrpcClient usersClients;
     private final NotificationRepository notificationRepository;
+    private final NotificationUtil notificationUtil;
 
-    public BookingServiceConsumer(UserGrpcClient usersClients, NotificationRepository notificationRepository) {
+    public BookingServiceConsumer(UserGrpcClient usersClients, NotificationRepository notificationRepository, NotificationUtil notificationUtil) {
         this.usersClients = usersClients;
         this.notificationRepository = notificationRepository;
+        this.notificationUtil = notificationUtil;
     }
 
     @KafkaListener(topics = NEW_BOOKING_TOPIC)
@@ -45,7 +48,7 @@ public class BookingServiceConsumer {
             for (UserDto admin : admins) {
                 log.info("Sending notification to admin: {}", admin.getFirstName());
                 String message = String.format("New booking received with ID: %s", event.getBooking());
-                sendNotification(admin, message);
+                notificationUtil.sendNotification(admin.getId(), message);
                 log.info("Notification sent to admin: {}", admin.getFirstName());
             }
             log.info("Notification sent to all admins");
@@ -70,8 +73,8 @@ public class BookingServiceConsumer {
                     event.getBooking(),
                     event.getStatus()
             );
-            sendNotification(user, message);
-            log.trace("Notification sent to user: {}", user.getFirstName());
+            notificationUtil.sendNotification(user.getId(), message);
+            log.info("Notification sent to user: {}", user.getFirstName());
         } catch (DataAccessException | TransactionSystemException ex) {
             log.error("Database error while saving notification: {}", ex.getMessage(), ex);
             throw new ServiceException("Notification saving failed", ex);
@@ -91,7 +94,7 @@ public class BookingServiceConsumer {
                     "Your booking with ID %s has been confirmed",
                     event.getBooking()
             );
-            sendNotification(user, message);
+            notificationUtil.sendNotification(user.getId(), message);
             log.trace("Notification sent to: {}", user.getFirstName());
         } catch (DataAccessException | TransactionSystemException ex) {
             log.error("Database error while saving notification: {}", ex.getMessage(), ex);
@@ -99,27 +102,6 @@ public class BookingServiceConsumer {
         } catch (Exception ex) {
             log.error("Unexpected error in booking event processing", ex);
             throw new ServiceException("Unexpected error", ex);
-        }
-    }
-
-    private void sendNotification(UserDto user, String message) {
-        log.info("Saving notification for User with ID: {}", user.getId());
-        try {
-            Notification notification = new Notification();
-            notification.setUserId(user.getId());
-            notification.setMessage(message);
-
-            notificationRepository.save(notification);
-            log.info("Notification saved for user: {}", user.getEmail());
-
-        } catch (DataAccessException ex) {
-            log.error("Database access error while saving notification for user {}: {}", user.getEmail(), ex.getMessage());
-        } catch (ConstraintViolationException ex) {
-            log.error("Constraint violation while saving notification for user {}: {}", user.getEmail(), ex.getMessage());
-        } catch (TransactionSystemException ex) {
-            log.error("Transaction error while saving notification for user {}: {}", user.getEmail(), ex.getMessage());
-        } catch (Exception ex) {
-            log.error("Unexpected error while saving notification for user {}: {}", user.getEmail(), ex.getMessage());
         }
     }
 }

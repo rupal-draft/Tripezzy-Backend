@@ -7,6 +7,7 @@ import com.tripezzy.payment_service.dto.*;
 import com.tripezzy.payment_service.entity.Payment;
 import com.tripezzy.payment_service.entity.enums.PaymentCategory;
 import com.tripezzy.payment_service.entity.enums.PaymentStatus;
+import com.tripezzy.payment_service.event.CheckoutProductEvent;
 import com.tripezzy.payment_service.exceptions.*;
 import com.tripezzy.payment_service.repository.PaymentRepository;
 import com.tripezzy.payment_service.service.PaymentService;
@@ -16,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
+import org.springframework.kafka.KafkaException;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,10 +31,14 @@ public class PaymentServiceImpl implements PaymentService {
     private static final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
     private final PaymentRepository paymentRepository;
     private final ModelMapper modelMapper;
+    private final KafkaTemplate<Long, CheckoutProductEvent> kafkaTemplate;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository, ModelMapper modelMapper) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository,
+                              ModelMapper modelMapper,
+                              KafkaTemplate<Long, CheckoutProductEvent> kafkaTemplate) {
         this.paymentRepository = paymentRepository;
         this.modelMapper = modelMapper;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
@@ -135,6 +142,28 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
 
         savePayment(paymentResponse, referenceId, userId, category);
+        log.info("Payment record saved successfully for reference ID: {}", referenceId);
+
+        try{
+            log.info("Sending checkout event for reference ID: {}", referenceId);
+            CheckoutProductEvent event = new CheckoutProductEvent();
+            event.setProductName(name);
+            event.setAmount(amount);
+            event.setProduct(referenceId);
+            event.setQuantity(quantity);
+            event.setSession(session.getId());
+            event.setSessionUrl(session.getUrl());
+            event.setUser(userId);
+            event.setReference(referenceId);
+
+            kafkaTemplate.send("checkout-product", referenceId, event);
+            log.info("Checkout event sent successfully for reference ID: {}", referenceId);
+        } catch (KafkaException e) {
+            log.error("Error sending checkout event for reference ID: {}", referenceId, e.getLocalizedMessage());
+            throw new PaymentProcessingException("Failed to send checkout event");
+        }
+
+
         return paymentResponse;
     }
 
