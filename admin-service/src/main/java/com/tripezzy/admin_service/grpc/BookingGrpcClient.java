@@ -32,7 +32,7 @@ public class BookingGrpcClient {
     public BookingGrpcClient() {
         try {
             this.channel = ManagedChannelBuilder
-                    .forAddress("localhost", 9011)
+                    .forAddress("booking-service", 9011)
                     .usePlaintext()
                     .build();
 

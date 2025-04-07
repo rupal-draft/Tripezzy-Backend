@@ -1,7 +1,7 @@
 eureka:
   instance:
     prefer-ip-address: true
-    hostname: localhost
+    hostname: eCommerce-service
 
 resilience4j:
   ratelimiter:

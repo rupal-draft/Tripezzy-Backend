@@ -34,7 +34,7 @@ public class BlogGrpcClient {
     public BlogGrpcClient() {
         try {
             this.channel = ManagedChannelBuilder
-                    .forAddress("localhost", 9001)
+                    .forAddress("blog-service", 9001)
                     .usePlaintext()
                     .build();
 

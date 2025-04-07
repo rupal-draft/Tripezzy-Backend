@@ -31,7 +31,7 @@ public class PaymentGrpcClient {
     public PaymentGrpcClient() {
         try {
             this.channel = ManagedChannelBuilder
-                    .forAddress("localhost", 4001)
+                    .forAddress("payment-service", 4001)
                     .usePlaintext()
                     .build();
 

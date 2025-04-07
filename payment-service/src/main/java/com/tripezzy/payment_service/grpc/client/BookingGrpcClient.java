@@ -29,7 +29,7 @@ public class BookingGrpcClient {
 
     public BookingGrpcClient() {
         this.channel = ManagedChannelBuilder
-                .forAddress("localhost", 9011)
+                .forAddress("booking-service", 9011)
                 .usePlaintext()
                 .build();
         this.bookingStub = BookingServiceGrpc.newBlockingStub(channel);

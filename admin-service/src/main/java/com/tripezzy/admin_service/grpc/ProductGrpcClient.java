@@ -36,7 +36,7 @@ public class ProductGrpcClient {
     public ProductGrpcClient() {
         try{
             this.channel = ManagedChannelBuilder
-                    .forAddress("localhost", 8001)
+                    .forAddress("eCommerce-service", 8001)
                     .usePlaintext()
                     .build();
             productStub = ProductServiceGrpc.newBlockingStub(channel);

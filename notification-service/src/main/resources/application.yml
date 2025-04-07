@@ -1,11 +1,11 @@
 eureka:
   instance:
     prefer-ip-address: true
-    hostname: localhost
+    hostname: notification-service
 
 spring:
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:9092
     consumer:
       group-id: ${spring.application.name}
       key-deserializer: org.apache.kafka.common.serialization.LongDeserializer

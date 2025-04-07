@@ -35,7 +35,7 @@ public class UserGrpcClient {
 
     public UserGrpcClient() {
         this.channel = ManagedChannelBuilder
-                .forAddress("localhost", 6001)
+                .forAddress("user-service", 6001)
                 .usePlaintext()
                 .build();
         this.userStub = UserServiceGrpc.newBlockingStub(channel);

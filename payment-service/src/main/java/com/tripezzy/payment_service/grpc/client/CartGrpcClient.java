@@ -29,7 +29,7 @@ public class CartGrpcClient {
 
     public CartGrpcClient() {
         this.channel = ManagedChannelBuilder
-                .forAddress("localhost", 8001)
+                .forAddress("eCommerce-service", 8001)
                 .usePlaintext()
                 .build();
         this.cartStub = CartServiceGrpc.newBlockingStub(channel);
