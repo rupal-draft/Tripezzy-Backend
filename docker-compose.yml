@@ -1,0 +1,266 @@
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+    networks:
+      - tripezzy-network
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+      - 29092:29092
+    networks:
+      - tripezzy-network
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  kafbat-ui:
+    container_name: kafbat-ui
+    image: ghcr.io/kafbat/kafka-ui:latest
+    ports:
+      - "5050:8080"
+    depends_on:
+      - kafka
+    networks:
+      - tripezzy-network
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_KSQLDBSERVER: http://ksqldb0:8088
+
+
+  discovery-server:
+    image: rupaldraft/tripezzy-backend/discovery-server
+    container_name: discovery-server
+    networks:
+      - tripezzy-network
+    ports:
+      - "8761:8761"
+
+  api-gateway:
+    image: rupaldraft/tripezzy-backend/api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - tripezzy-network
+    depends_on:
+      - discovery-server
+    env_file:
+      - ./envs/api-gateway.env
+
+  booking-service:
+    image: rupaldraft/tripezzy-backend/booking-service
+    container_name: booking-service
+    ports:
+      - "9010:9010"
+      - "9011:9011"
+    networks:
+      - tripezzy-network
+    depends_on:
+      - discovery-server
+      - kafka
+      - booking-db
+    env_file:
+      - ./envs/booking-service.env
+
+  blog-service:
+    image: rupaldraft/tripezzy-backend/blog-service
+    container_name: blog-service
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - tripezzy-network
+    depends_on:
+      - discovery-server
+      - kafka
+      - blog-db
+    env_file:
+      - ./envs/blog-service.env
+
+  user-service:
+    image: rupaldraft/tripezzy-backend/user-service
+    container_name: user-service
+    ports:
+      - "6000:6000"
+      - "6001:6001"
+    networks:
+      - tripezzy-network
+    depends_on:
+      - discovery-server
+      - kafka
+      - user-db
+    env_file:
+      - ./envs/user-service.env
+
+
+  eCommerce-service:
+    image: rupaldraft/tripezzy-backend/ecommerce-service
+    container_name: eCommerce-service
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    networks:
+      - tripezzy-network
+    depends_on:
+      - discovery-server
+      - eCommerce-db
+    env_file:
+      - ./envs/eCommerce-service.env
+
+  admin-service:
+    image: rupaldraft/tripezzy-backend/admin-service
+    container_name: admin-service
+    ports:
+      - "5000:5000"
+    networks:
+      - tripezzy-network
+    depends_on:
+      - discovery-server
+      - admin-db
+    env_file:
+      - ./envs/admin-service.env
+
+  payment-service:
+    image: rupaldraft/tripezzy-backend/payment-service
+    container_name: payment-service
+    ports:
+      - "4000:4000"
+      - "4001:4001"
+    networks:
+      - tripezzy-network
+    depends_on:
+      - discovery-server
+      - payment-db
+    env_file:
+      - ./envs/payment-service.env
+
+  notification-service:
+    image: rupaldraft/tripezzy-backend/notification-service
+    container_name: notification-service
+    ports:
+      - "7000:7000"
+      - "7001:7001"
+    networks:
+      - tripezzy-network
+    depends_on:
+      - discovery-server
+      - kafka
+      - notification-db
+    env_file:
+      - ./envs/notification-service.env
+
+
+  admin-db:
+    image: postgres
+    container_name: admin-db
+    environment:
+      - POSTGRES_DB=adminDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=tulshi paul
+    volumes:
+      - admin-db-data:/var/lib/postgresql/data
+    networks:
+      - tripezzy-network
+
+  user-db:
+    image: postgres
+    container_name: user-db
+    environment:
+      - POSTGRES_DB=userDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=tulshi paul
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+    networks:
+      - tripezzy-network
+
+  blog-db:
+    image: postgres
+    container_name: blog-db
+    environment:
+      - POSTGRES_DB=blogDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=tulshi paul
+    volumes:
+      - blog-db-data:/var/lib/postgresql/data
+    networks:
+      - tripezzy-network
+
+  booking-db:
+    image: postgres
+    container_name: booking-db
+    environment:
+      - POSTGRES_DB=bookingDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=tulshi paul
+    volumes:
+      - booking-db-data:/var/lib/postgresql/data
+    networks:
+      - tripezzy-network
+
+  eCommerce-db:
+    image: postgres
+    container_name: eCommerce-db
+    environment:
+      - POSTGRES_DB=eCommerceDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=tulshi paul
+    volumes:
+      - eCommerce-db-data:/var/lib/postgresql/data
+    networks:
+      - tripezzy-network
+
+  payment-db:
+    image: postgres
+    container_name: payment-db
+    environment:
+      - POSTGRES_DB=paymentDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=tulshi paul
+    volumes:
+      - payment-db-data:/var/lib/postgresql/data
+    networks:
+      - tripezzy-network
+
+  notification-db:
+    image: postgres
+    container_name: notification-db
+    environment:
+      - POSTGRES_DB=notificationDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=tulshi paul
+    volumes:
+      - notification-db-data:/var/lib/postgresql/data
+    networks:
+      - tripezzy-network
+
+
+
+networks:
+  tripezzy-network:
+
+
+volumes:
+  admin-db-data:
+  user-db-data:
+  blog-db-data:
+  booking-db-data:
+  eCommerce-db-data:
+  payment-db-data:
+  notification-db-data:
