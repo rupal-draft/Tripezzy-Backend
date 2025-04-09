@@ -1,0 +1,23 @@
+spring.application.name: ${SPRING_APPLICATION_NAME}
+server.port: ${SERVER_PORT}
+server.servlet.context-path: /uploader
+eureka.client.service-url.defaultZone: ${EUREKA_SERVER_URL}
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    hostname: uploader-service
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
+
+
+resilience4j:
+  ratelimiter:
+    instances:
+      uploader:
+        limit-for-period: 5
+        limit-refresh-period: 10s
+        timeout-duration: 0
