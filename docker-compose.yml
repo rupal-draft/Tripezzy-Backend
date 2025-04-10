@@ -108,6 +108,18 @@ services:
     env_file:
       - ./envs/user-service.env
 
+  uploader-service:
+    image: rupaldraft/tripezzy-backend/uploader-service
+    container_name: uploader-service
+    ports:
+      - "9050:9050"
+    networks:
+      - tripezzy-network
+    depends_on:
+      - discovery-server
+    env_file:
+      - ./envs/uploader-service.env
+
 
   eCommerce-service:
     image: rupaldraft/tripezzy-backend/ecommerce-service

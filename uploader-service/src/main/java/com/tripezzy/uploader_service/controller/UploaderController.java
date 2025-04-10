@@ -20,13 +20,13 @@ public class UploaderController {
         this.fileUploaderService = fileUploaderService;
     }
 
-    @PostMapping("/public")
+    @PostMapping
     @RateLimiter(name = "uploader", fallbackMethod = "uploadFilefallback")
     public ResponseEntity<Map<String, String>> uploadFile(@RequestParam MultipartFile file) {
         return ResponseEntity.ok(fileUploaderService.uploadFile(file));
     }
 
-    @DeleteMapping("/public")
+    @DeleteMapping
     @RateLimiter(name = "uploader", fallbackMethod = "deleteFilefallback")
     public ResponseEntity<Boolean> deleteFile(@RequestParam String publicId) {
         return ResponseEntity.ok(fileUploaderService.deleteFile(publicId));
