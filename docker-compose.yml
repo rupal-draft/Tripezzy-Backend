@@ -42,6 +42,14 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
       KAFKA_CLUSTERS_0_KSQLDBSERVER: http://ksqldb0:8088
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - tripezzy-network
+
 
   discovery-server:
     image: rupaldraft/tripezzy-backend/discovery-server
@@ -75,6 +83,7 @@ services:
       - discovery-server
       - kafka
       - booking-db
+      - redis
     env_file:
       - ./envs/booking-service.env
 
@@ -90,6 +99,7 @@ services:
       - discovery-server
       - kafka
       - blog-db
+      - redis
     env_file:
       - ./envs/blog-service.env
 
@@ -132,6 +142,7 @@ services:
     depends_on:
       - discovery-server
       - eCommerce-db
+      - redis
     env_file:
       - ./envs/eCommerce-service.env
 
@@ -145,6 +156,7 @@ services:
     depends_on:
       - discovery-server
       - admin-db
+      - redis
     env_file:
       - ./envs/admin-service.env
 
@@ -159,6 +171,7 @@ services:
     depends_on:
       - discovery-server
       - payment-db
+      - redis
     env_file:
       - ./envs/payment-service.env
 
@@ -174,6 +187,7 @@ services:
       - discovery-server
       - kafka
       - notification-db
+      - redis
     env_file:
       - ./envs/notification-service.env
 
