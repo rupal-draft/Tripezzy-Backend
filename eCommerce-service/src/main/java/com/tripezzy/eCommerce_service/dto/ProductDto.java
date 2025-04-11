@@ -2,7 +2,9 @@ package com.tripezzy.eCommerce_service.dto;
 
 import jakarta.validation.constraints.*;
 
-public class ProductDto {
+import java.io.Serializable;
+
+public class ProductDto implements Serializable {
 
     @NotBlank(message = "Name cannot be blank")
     @Size(max = 200, message = "Name must be less than 200 characters")

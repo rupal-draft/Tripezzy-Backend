@@ -1,6 +1,8 @@
 package com.tripezzy.admin_service.dto;
 
-public class BookingDto {
+import java.io.Serializable;
+
+public class BookingDto implements Serializable {
     private Long bookingId;
     private String firstName;
     private String lastName;

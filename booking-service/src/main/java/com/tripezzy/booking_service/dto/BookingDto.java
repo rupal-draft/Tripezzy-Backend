@@ -2,10 +2,11 @@ package com.tripezzy.booking_service.dto;
 
 import jakarta.validation.constraints.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class BookingDto {
+public class BookingDto implements Serializable {
 
     private Long id;
 

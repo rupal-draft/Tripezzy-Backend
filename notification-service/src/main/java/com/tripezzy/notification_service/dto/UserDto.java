@@ -1,6 +1,8 @@
 package com.tripezzy.notification_service.dto;
 
-public class UserDto {
+import java.io.Serializable;
+
+public class UserDto implements Serializable {
     private Long id;
 
     private String firstName;

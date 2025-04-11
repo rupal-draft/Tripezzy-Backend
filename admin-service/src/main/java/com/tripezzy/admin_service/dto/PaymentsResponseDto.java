@@ -1,6 +1,8 @@
 package com.tripezzy.admin_service.dto;
 
-public class PaymentsResponseDto {
+import java.io.Serializable;
+
+public class PaymentsResponseDto implements Serializable {
     private Long id;
     private Long userId;
     private Long referenceId;

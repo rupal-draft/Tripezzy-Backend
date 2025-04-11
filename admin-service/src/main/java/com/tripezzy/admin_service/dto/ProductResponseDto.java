@@ -1,6 +1,8 @@
 package com.tripezzy.admin_service.dto;
 
-public class ProductResponseDto {
+import java.io.Serializable;
+
+public class ProductResponseDto implements Serializable {
     private String name;
     private String description;
     private double price;

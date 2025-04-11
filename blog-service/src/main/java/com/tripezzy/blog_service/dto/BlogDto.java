@@ -4,7 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class BlogDto {
+import java.io.Serializable;
+
+public class BlogDto implements Serializable {
 
     @NotBlank(message = "Title cannot be blank")
     @Size(max = 200, message = "Title must be less than 200 characters")

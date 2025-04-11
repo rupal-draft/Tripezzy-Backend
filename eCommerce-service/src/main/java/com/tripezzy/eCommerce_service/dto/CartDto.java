@@ -2,9 +2,10 @@ package com.tripezzy.eCommerce_service.dto;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class CartDto {
+public class CartDto implements Serializable {
 
     @NotNull(message = "User ID cannot be null")
     private Long userId;

@@ -3,7 +3,9 @@ package com.tripezzy.eCommerce_service.dto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-public class CartItemResponseDto {
+import java.io.Serializable;
+
+public class CartItemResponseDto implements Serializable {
     private ProductDto product;
 
     @NotNull(message = "Quantity cannot be null")

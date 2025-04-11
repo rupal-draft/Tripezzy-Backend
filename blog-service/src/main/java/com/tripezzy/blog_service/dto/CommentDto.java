@@ -3,7 +3,9 @@ package com.tripezzy.blog_service.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class CommentDto {
+import java.io.Serializable;
+
+public class CommentDto implements Serializable {
 
     @NotBlank(message = "Content cannot be blank")
     @Size(max = 500, message = "Content must be less than 500 characters")

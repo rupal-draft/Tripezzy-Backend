@@ -1,9 +1,10 @@
 package com.tripezzy.eCommerce_service.dto;
 
 
+import java.io.Serializable;
 import java.util.List;
 
-public class WishlistDto {
+public class WishlistDto implements Serializable {
 
     private Long userId;
     private List<ProductDto> productDtos;

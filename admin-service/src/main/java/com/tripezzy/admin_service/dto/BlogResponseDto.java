@@ -1,6 +1,8 @@
 package com.tripezzy.admin_service.dto;
 
-public class BlogResponseDto {
+import java.io.Serializable;
+
+public class BlogResponseDto implements Serializable {
     private Long id;
     private String title;
     private String content;

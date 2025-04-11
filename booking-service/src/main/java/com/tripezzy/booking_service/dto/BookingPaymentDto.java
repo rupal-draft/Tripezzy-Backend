@@ -4,9 +4,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class BookingPaymentDto {
+public class BookingPaymentDto implements Serializable {
     @NotNull(message = "Amount is required")
     @Min(value = 1, message = "Amount must be at least 1")
     private BigDecimal amount;

@@ -2,7 +2,9 @@ package com.tripezzy.payment_service.dto;
 
 import com.tripezzy.payment_service.entity.enums.PaymentStatus;
 
-public class ResponseEcomPayment {
+import java.io.Serializable;
+
+public class ResponseEcomPayment implements Serializable {
     private PaymentStatus status;
     private String message;
     private String session;

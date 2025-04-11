@@ -2,10 +2,11 @@ package com.tripezzy.admin_service.dto;
 
 import jakarta.validation.constraints.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class TourDto {
+public class TourDto implements Serializable {
 
     @NotBlank(message = "Name is required")
     @Size(max = 100, message = "Name must not exceed 100 characters")

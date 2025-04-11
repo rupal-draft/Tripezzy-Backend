@@ -3,9 +3,10 @@ package com.tripezzy.payment_service.dto;
 import com.tripezzy.payment_service.entity.enums.PaymentCategory;
 import com.tripezzy.payment_service.entity.enums.PaymentStatus;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class PaymentsResponse {
+public class PaymentsResponse implements Serializable {
     private Long id;
 
     private Long user;

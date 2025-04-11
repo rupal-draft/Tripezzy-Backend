@@ -2,10 +2,11 @@ package com.tripezzy.blog_service.dto;
 
 import com.tripezzy.blog_service.entity.enums.BlogStatus;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class BlogResponseDto {
+public class BlogResponseDto implements Serializable {
     private Long id;
     private String title;
     private String content;

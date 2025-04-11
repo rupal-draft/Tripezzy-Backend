@@ -1,6 +1,8 @@
 package com.tripezzy.payment_service.dto;
 
-public class BookingPaymentRequestDto {
+import java.io.Serializable;
+
+public class BookingPaymentRequestDto implements Serializable {
     private double amount;
     private long quantity;
     private String name;
