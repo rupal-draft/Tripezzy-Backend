@@ -69,7 +69,7 @@ services:
     depends_on:
       - discovery-server
     env_file:
-      - ./envs/api-gateway.env
+      - ./api-gateway/.env
 
   booking-service:
     image: rupaldraft/tripezzy-backend/booking-service
@@ -85,7 +85,7 @@ services:
       - booking-db
       - redis
     env_file:
-      - ./envs/booking-service.env
+      - ./booking-service/.env
 
   blog-service:
     image: rupaldraft/tripezzy-backend/blog-service
@@ -101,7 +101,7 @@ services:
       - blog-db
       - redis
     env_file:
-      - ./envs/blog-service.env
+      - ./blog-service/.env
 
   user-service:
     image: rupaldraft/tripezzy-backend/user-service
@@ -116,7 +116,7 @@ services:
       - kafka
       - user-db
     env_file:
-      - ./envs/user-service.env
+      - ./user-service/.env
 
   uploader-service:
     image: rupaldraft/tripezzy-backend/uploader-service
@@ -128,7 +128,7 @@ services:
     depends_on:
       - discovery-server
     env_file:
-      - ./envs/uploader-service.env
+      - ./uploader-service/.env
 
 
   eCommerce-service:
@@ -144,7 +144,7 @@ services:
       - eCommerce-db
       - redis
     env_file:
-      - ./envs/eCommerce-service.env
+      - ./eCommerce-service/.env
 
   admin-service:
     image: rupaldraft/tripezzy-backend/admin-service
@@ -158,7 +158,7 @@ services:
       - admin-db
       - redis
     env_file:
-      - ./envs/admin-service.env
+      - ./admin-service/.env
 
   payment-service:
     image: rupaldraft/tripezzy-backend/payment-service
@@ -173,7 +173,7 @@ services:
       - payment-db
       - redis
     env_file:
-      - ./envs/payment-service.env
+      - ./payment-service/.env
 
   notification-service:
     image: rupaldraft/tripezzy-backend/notification-service
@@ -189,7 +189,7 @@ services:
       - notification-db
       - redis
     env_file:
-      - ./envs/notification-service.env
+      - ./notification-service/.env
 
 
   admin-db:
