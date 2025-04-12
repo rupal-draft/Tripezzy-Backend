@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: admin-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-db
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: admin-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-db
+spec:
+  selector:
+    matchLabels:
+      app: admin-db
+  template:
+    metadata:
+      labels:
+        app: admin-db
+    spec:
+      containers:
+        - name: admin-db
+          image: postgres
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: adminDB
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: tulshi paul
+          volumeMounts:
+            - name: admin-db-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: admin-db-storage
+          persistentVolumeClaim:
+            claimName: admin-db-pvc

@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: blog-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-db
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: blog-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-db
+spec:
+  selector:
+    matchLabels:
+      app: blog-db
+  template:
+    metadata:
+      labels:
+        app: blog-db
+    spec:
+      containers:
+        - name: blog-db
+          image: postgres
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: blogDB
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: tulshi paul
+          volumeMounts:
+            - name: blog-db-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: blog-db-storage
+          persistentVolumeClaim:
+            claimName: blog-db-pvc
