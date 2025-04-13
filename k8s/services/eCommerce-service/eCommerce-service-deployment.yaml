@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecommerce-service
+  namespace: tripezzy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecommerce-service
+  template:
+    metadata:
+      labels:
+        app: ecommerce-service
+    spec:
+      containers:
+        - name: ecommerce-service
+          image: rupaldraft/tripezzy-backend-ecommerce-service
+          ports:
+            - containerPort: 8000  # HTTP
+            - containerPort: 8001  # gRPC
+          envFrom:
+            - secretRef:
+                name: ecommerce-service-secret

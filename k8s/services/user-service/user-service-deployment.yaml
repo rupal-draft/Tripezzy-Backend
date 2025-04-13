@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: tripezzy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: rupaldraft/tripezzy-backend-user-service
+          ports:
+            - containerPort: 6000  # HTTP
+            - containerPort: 6001  # gRPC
+          envFrom:
+            - secretRef:
+                name: user-service-secret

@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: tripezzy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: rupaldraft/tripezzy-backend-notification-service
+          ports:
+            - containerPort: 7000  # HTTP
+            - containerPort: 7001  # gRPC
+          envFrom:
+            - secretRef:
+                name: notification-service-secret

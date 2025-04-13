@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uploader-service
+  namespace: tripezzy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uploader-service
+  template:
+    metadata:
+      labels:
+        app: uploader-service
+    spec:
+      containers:
+        - name: uploader-service
+          image: rupaldraft/tripezzy-backend-uploader-service
+          ports:
+            - containerPort: 9050
+          envFrom:
+            - secretRef:
+                name: uploader-service-secret
