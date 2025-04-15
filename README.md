@@ -129,6 +129,9 @@ To get started with the Tripezzy project, follow these general steps:
 
 Each microservice has its own README.md file with detailed information about its specific functionality, API endpoints, and configuration. Please refer to the individual README files for more details.
 
+-   **Postman Documentation:** [https://documenter.getpostman.com/view/30415721/2sB2cUANY6](https://documenter.getpostman.com/view/30415721/2sB2cUANY6)
+
+
 
 
 ## gRPC Setup
